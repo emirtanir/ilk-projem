@@ -103,7 +103,7 @@ Arayüz **çok basit** olmalı: serbest çizim yok, adım adım seçim. Her seç
 
 ## 6a. Müşteri hesabı
 
-- **Prototipte sadece arayüz:** Gerçek kayıt, şifre saklama veya sunucu yok; butonlar örnek kullanıcıyla giriş yapılmış gibi davranır (bilgiler tarayıcı hafızasında). Gerçek hesap sistemi Supabase Auth ile kurulacak (bölüm 11).
+- **Giriş, üyelik, şifre yenileme ve çıkış Supabase Auth ile çalışıyor** (`js/supabase.js`). Üyelikte e-posta doğrulaması var. Ad, telefon, iletişim izinleri ve onay tarihleri (KVKK onayı, izin tarihi) Supabase hesabının ek bilgilerinde (user_metadata) tutuluyor. Siparişler hâlâ örnek; adresler, favoriler ve kayıtlı tasarımlar şimdilik tarayıcıda (sonraki adım: Supabase veritabanı). Google ile giriş kapalı (`SUPABASE_AYAR.googleGirisAcik`).
 - **Üye olmadan alışveriş her zaman mümkün.** Sepette "Üye olmadan devam et" her zaman görünür ve en önde; yanında "Giriş Yap" ve "Üye Ol". Sipariş tamamlandı ekranında üye olmayana "Bilgilerinizi kaydedip hesap oluşturun" önerisi çıkar.
 - **Ticari ileti onayı ayrı ve isteğe bağlı:** Üye olurken KVKK aydınlatma metni onayı zorunlu; "Kampanya, çekiliş ve yeniliklerden SMS/e-posta ile haberdar olmak istiyorum" kutusu ayrı, isteğe bağlı ve varsayılan olarak işaretsiz. Hesap Bilgilerim'den SMS ve e-posta izni ayrı ayrı değiştirilebilir.
 - Favoriler: ürün kartı ve ürün detayında kalp ikonu. Kendi Tasarımını Yap'ta "Tasarımımı kaydet" (giriş yoksa giriş sayfasına yönlendirir, girişten sonra tasarım otomatik kaydedilir).
@@ -154,6 +154,9 @@ Arayüz **çok basit** olmalı: serbest çizim yok, adım adım seçim. Her seç
 - **Ödeme:** iyzico veya PayTR. Kart bilgisi asla bizde tutulmaz.
 - **Yönetim paneli:** Hazır panel yok; telefondan rahat kullanılan basit bir panel sayfası yazılacak (siparişler, durum güncelleme, altın fiyatı girişi, ürün ekleme).
 - **Anahtarlar:** Supabase proje adresi ve `anon` (public) anahtarı sitede durabilir. `service_role` anahtarı, ödeme şirketi gizli anahtarları **asla** repoya ve site koduna girmez; sadece Supabase Edge Function gizli ayarlarında durur.
+- **Supabase panel ayarları (Authentication → URL Configuration):** Site URL `https://emirtanir.github.io/ilk-projem/`, Redirect URLs `https://emirtanir.github.io/ilk-projem/**`. Doğrulama ve şifre yenileme bağlantıları buraya döner.
+- **E-posta gönderimi:** Supabase'in hazır e-posta servisi sadece proje ekibinin adreslerine ve saatte birkaç e-posta gönderir; müşterilere açılmadan önce bedava katmanı olan bir SMTP servisi (ör. Brevo, Resend) bağlanmalı ve e-posta şablonları Türkçeleştirilmeli.
+- **Kütüphane:** supabase-js 2.117.2, jsDelivr'den sabit sürümle yükleniyor.
 - **Bedava katman sınırları:** Depolama ve kullanım sınırlı, otomatik yedek yok, uzun süre kullanılmayan proje durdurulabilir. Koşullar değişebilir; kurulumda güncel sınırlar kontrol edilecek.
 
 ---
@@ -165,6 +168,7 @@ Arayüz **çok basit** olmalı: serbest çizim yok, adım adım seçim. Her seç
 - [ ] **KVKK – yurt dışına aktarım:** Supabase sunucusu Avrupa'da (Frankfurt). Standart sözleşme + KVKK Kurumu'na bildirim gerekiyor; avukat/muhasebeciyle teyit edilecek. Aydınlatma metninde belirtilecek.
 - [ ] **İYS kaydı:** Kampanya/çekiliş SMS ve e-posta onayları İleti Yönetim Sistemi'ne kaydedilmeli. Kim yapacak?
 - [ ] **VERBİS:** Muafiyet teyit edilecek.
+- [ ] **E-posta (SMTP) servisi:** Müşterilere doğrulama/şifre e-postası gidebilmesi için bağlanacak; gönderen adres info@lidyakuyum.com olmalı.
 - [ ] **Yedekleme:** Supabase bedava katmanında otomatik yedek yok; düzenli yedeği kendimiz alacağız (yöntem belirlenecek).
 - [ ] **Ödeme şirketi:** iyzico mu PayTR mı? (Aileden Beklenen Cevaplar 4)
 - [ ] **Ücretsiz kargo sınırı, kargo ücreti ve "Uygun Hediyeler" fiyat aralıkları:** prototipte örnek değerler (2.000 TL / 150 TL / 1.000-5.000-7.500 TL). Gerçek fiyatlar girilirken, siteyi yayına almadan önce birlikte güncellenecek (`js/fiyat.js` → `SATIS_AYARLARI`).

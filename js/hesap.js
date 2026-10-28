@@ -1,7 +1,11 @@
-/* Hesabım (PROTOTİP) — siparişler ve varsayılan adresler örnek veridir. */
+/* Hesabım — giriş ve hesap bilgileri Supabase'de (js/supabase.js).
+   Siparişler şimdilik örnek veri; adresler, favoriler ve tasarımlar şimdilik tarayıcıda. */
 
 const kullanici = kullaniciGetir();
-if (!kullanici) location.replace('giris.html?donus=hesabim.html');
+const GIRIS_SAYFASI = 'giris.html?donus=hesabim.html';
+if (!kullanici) location.replace(GIRIS_SAYFASI);
+// Oturum süresi dolduysa ya da başka yerden çıkış yapıldıysa giriş sayfasına gönder
+oturumHazir.then(() => { if (!kullaniciGetir()) location.replace(GIRIS_SAYFASI); });
 
 /* ---------- Örnek veriler ---------- */
 const SIPARIS_DURUMLARI = ['Hazırlanıyor', 'Kargoda', 'Teslim edildi'];
@@ -14,14 +18,11 @@ const ORNEK_SIPARISLER = [
   { no: 'LDY-10215', tarih: '2 Eylül 2026', durum: 'Teslim edildi', takipNo: '7300 1702 8814',
     kalemler: [{ urun: URUNLER[6] }] },
 ];
-const ORNEK_TASARIMLAR = [
-  { id: 'ornek-1', tur: 'isim', secim: { isim: 'Elif', ayar: '14', zincir: '45' } },
-  { id: 'ornek-2', tur: 'harf', secim: { harf: 'D', ayar: '22' } },
-];
 
 /* ---------- Bölümler ---------- */
 function siparislerHTML() {
   return `<h2>Siparişlerim</h2>
+  <p class="hesap-aciklama ornek-not">Aşağıdakiler örnek siparişlerdir. Ödeme sistemi kurulunca gerçek siparişleriniz burada görünecek.</p>
   <div class="hesap-liste">
     ${ORNEK_SIPARISLER.map(s => {
       const adim = SIPARIS_DURUMLARI.indexOf(s.durum);
@@ -53,8 +54,11 @@ function onizlemeSvg(t, i) {
 }
 
 function tasarimlarHTML() {
-  const kayitli = tasarimlarGetir();
-  const hepsi = [...kayitli, ...ORNEK_TASARIMLAR];
+  const hepsi = tasarimlarGetir();
+  if (!hepsi.length) {
+    return `<h2>Tasarımlarım</h2>
+    <div class="hesap-bos"><p>Henüz kayıtlı tasarımınız yok. Kendi Tasarımını Yap'ta "Tasarımımı kaydet"e basınca burada görünür.</p><a class="dugme" href="tasarla.html">Tasarlamaya başla</a></div>`;
+  }
   return `<h2>Tasarımlarım</h2>
   <p class="hesap-aciklama">Kendi Tasarımını Yap’ta kaydettiğiniz tasarımlar. Fiyatlar güncel altın fiyatına göre tahminidir.</p>
   <div class="tasarim-izgara">
@@ -67,7 +71,7 @@ function tasarimlarHTML() {
         <p class="tasarim-fiyati">≈ ${paraYaz(fiyat)} <small>· kapora ${paraYaz(kaporaHesapla(fiyat))}</small></p>
         <div class="tasarim-dugmeler">
           <button class="dugme kucuk-dugme" data-sepet="${i}">Sepete ekle</button>
-          ${t.id.startsWith('ts-') ? `<button class="sil" data-tasarim-sil="${t.id}">Sil</button>` : ''}
+          <button class="sil" data-tasarim-sil="${t.id}">Sil</button>
         </div>
       </article>`;
     }).join('')}
@@ -156,7 +160,7 @@ function bolumAc() {
 
 /* ---------- Olaylar ---------- */
 if (kullanici) {
-  document.getElementById('hesap-selam').textContent = `Merhaba, ${kullanici.ad.split(' ')[0]}`;
+  selamYaz();
   window.addEventListener('hashchange', bolumAc);
   bolumAc();
 
@@ -165,8 +169,13 @@ if (kullanici) {
   if (mesaj) bildirim(location.hash === '#tasarimlar' && tasarimlarGetir().length ? mesaj + ' Tasarımınız kaydedildi.' : mesaj);
 }
 
-document.getElementById('cikis').addEventListener('click', () => {
-  cikisYap();
+function selamYaz() {
+  const ilkAd = (kullanici.ad || '').split(' ')[0];
+  document.getElementById('hesap-selam').textContent = ilkAd ? `Merhaba, ${ilkAd}` : 'Merhaba';
+}
+
+document.getElementById('cikis').addEventListener('click', async () => {
+  await cikisYap();
   location.href = 'index.html';
 });
 
@@ -181,7 +190,7 @@ icerik.addEventListener('click', e => {
 
   const sepet = e.target.closest('[data-sepet]');
   if (sepet) {
-    const t = [...tasarimlarGetir(), ...ORNEK_TASARIMLAR][sepet.dataset.sepet];
+    const t = tasarimlarGetir()[sepet.dataset.sepet];
     sepeteEkle(tasarimKalemi(t.tur, t.secim));
   }
 
@@ -218,31 +227,78 @@ icerik.addEventListener('submit', e => {
     bolumAc();
     bildirim('Adresiniz kaydedildi.');
   }
-  if (f.id === 'bilgi-form') {
-    Object.assign(kullanici, { ad: f.ad.value.trim(), eposta: f.eposta.value.trim(), telefon: f.telefon.value.trim() });
-    hafizaKaydet('lidya-hesap', kullanici);
-    document.getElementById('hesap-selam').textContent = `Merhaba, ${kullanici.ad.split(' ')[0]}`;
-    bildirim('Bilgileriniz güncellendi.');
-  }
+  if (f.id === 'bilgi-form') bilgileriKaydet(f);
   if (f.id === 'sifre-form') {
     if (f.yeni.value !== f.tekrar.value) {
       f.tekrar.setCustomValidity('Yeni şifreler aynı değil.');
       f.tekrar.reportValidity();
       return;
     }
+    sifreyiDegistir(f);
+  }
+});
+
+// İşlem sürerken butonu kilitle
+async function bekleyerek(form, is) {
+  const dugme = form.querySelector('[type=submit]');
+  const eski = dugme.textContent;
+  dugme.disabled = true;
+  dugme.textContent = 'Lütfen bekleyin…';
+  try { await is(); } finally { dugme.disabled = false; dugme.textContent = eski; }
+}
+
+// Ad, telefon (ve değiştiyse e-posta) Supabase hesabına kaydedilir
+function bilgileriKaydet(f) {
+  if (!sb) return bildirim(hataMesaji({ message: 'network' }));
+  const yeniEposta = f.eposta.value.trim();
+  const epostaDegisti = yeniEposta !== kullanici.eposta;
+  bekleyerek(f, async () => {
+    const guncelleme = { data: { ad: f.ad.value.trim(), telefon: f.telefon.value.trim() } };
+    if (epostaDegisti) guncelleme.email = yeniEposta;
+    const { data, error } = await sb.auth.updateUser(guncelleme, { emailRedirectTo: SITE_ADRESI + 'hesabim.html#bilgiler' });
+    if (error) return bildirim(hataMesaji(error));
+    Object.assign(kullanici, kullaniciBilgisi(data.user));
+    hafizaKaydet('lidya-hesap', kullanici);
+    selamYaz();
+    // E-posta değişikliği, yeni adrese gelen bağlantı onaylanınca geçerli olur
+    if (epostaDegisti) {
+      f.eposta.value = kullanici.eposta;
+      bildirim(`Bilgileriniz kaydedildi. E-posta değişikliği için <strong>${kacir(yeniEposta)}</strong> adresine onay bağlantısı gönderdik.`);
+    } else bildirim('Bilgileriniz güncellendi.');
+  });
+}
+
+// Önce mevcut şifre doğrulanır, sonra yeni şifre kaydedilir
+function sifreyiDegistir(f) {
+  if (!sb) return bildirim(hataMesaji({ message: 'network' }));
+  bekleyerek(f, async () => {
+    const dogrula = await sb.auth.signInWithPassword({ email: kullanici.eposta, password: f.eski.value });
+    if (dogrula.error) {
+      f.eski.setCustomValidity('Mevcut şifre hatalı.');
+      f.eski.reportValidity();
+      return;
+    }
+    const { error } = await sb.auth.updateUser({ password: f.yeni.value });
+    if (error) return bildirim(hataMesaji(error));
     f.reset();
     bildirim('Şifreniz güncellendi.');
-  }
-});
+  });
+}
 
 icerik.addEventListener('input', e => {
-  if (e.target.name === 'tekrar') e.target.setCustomValidity('');
+  if (e.target.name === 'tekrar' || e.target.name === 'eski') e.target.setCustomValidity('');
 });
 
-icerik.addEventListener('change', e => {
-  if (e.target.closest('#izin-form')) {
-    kullanici[e.target.name] = e.target.checked;
-    hafizaKaydet('lidya-hesap', kullanici);
-    bildirim('İletişim tercihiniz kaydedildi.');
-  }
+// İletişim izinleri Supabase hesabına, değişiklik tarihiyle birlikte kaydedilir (İYS için kayıt)
+icerik.addEventListener('change', async e => {
+  if (!e.target.closest('#izin-form')) return;
+  const kutu = e.target;
+  if (!sb) { kutu.checked = !kutu.checked; return bildirim(hataMesaji({ message: 'network' })); }
+  kutu.disabled = true;
+  const { error } = await sb.auth.updateUser({ data: { [kutu.name]: kutu.checked, izinTarihi: new Date().toISOString() } });
+  kutu.disabled = false;
+  if (error) { kutu.checked = !kutu.checked; return bildirim(hataMesaji(error)); }
+  kullanici[kutu.name] = kutu.checked;
+  hafizaKaydet('lidya-hesap', kullanici);
+  bildirim('İletişim tercihiniz kaydedildi.');
 });

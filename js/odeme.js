@@ -92,18 +92,40 @@ function tamamlandiCiz(bilgi) {
           <span><a href="kvkk.html" target="_blank" rel="noopener">KVKK Aydınlatma Metni</a>’ni okudum. <em>(zorunlu)</em></span></label>
         <label class="onay"><input type="checkbox" name="izin">
           <span>Kampanya, çekiliş ve yeniliklerden SMS/e-posta ile haberdar olmak istiyorum.</span></label>
+        <p class="form-mesaj" data-mesaj hidden></p>
         <button class="dugme dugme-genis" type="submit">Hesap oluştur</button>
       </form>
       <a class="metin-link" href="urunler.html">Hayır teşekkürler, alışverişe devam et</a>`}
   </div>`;
 
   const oneri = document.getElementById('oneri-form');
-  if (oneri) oneri.addEventListener('submit', e => {
+  // Misafir siparişinden sonra hesap: Supabase'de üyelik (e-posta doğrulaması gerekebilir)
+  if (oneri) oneri.addEventListener('submit', async e => {
     e.preventDefault();
+    const mesaj = oneri.querySelector('[data-mesaj]');
+    const goster = (metin, tur = 'hata') => { mesaj.textContent = metin; mesaj.className = 'form-mesaj ' + tur; mesaj.hidden = false; };
+    if (!sb) return goster(hataMesaji({ message: 'network' }));
+    const dugme = oneri.querySelector('[type=submit]');
+    dugme.disabled = true;
+    const simdi = new Date().toISOString();
     const izin = oneri.izin.checked;
-    girisYap({ ad: bilgi.ad, eposta: bilgi.eposta, telefon: bilgi.telefon, izinSms: izin, izinEposta: izin });
-    try { sessionStorage.setItem('lidya-giris-mesaji', 'Hesabınız oluşturuldu. Siparişinizi buradan takip edebilirsiniz.'); } catch (err) {}
-    location.href = 'hesabim.html#siparisler';
+    const { data, error } = await sb.auth.signUp({
+      email: bilgi.eposta, password: oneri.sifre.value,
+      options: {
+        data: { ad: bilgi.ad, telefon: bilgi.telefon, kvkkOnayTarihi: simdi, izinSms: izin, izinEposta: izin, izinTarihi: izin ? simdi : null },
+        emailRedirectTo: SITE_ADRESI + 'giris.html?dogrulandi=1&donus=' + encodeURIComponent('hesabim.html#siparisler'),
+      },
+    });
+    dugme.disabled = false;
+    if (error) return goster(hataMesaji(error));
+    if (data.session) {
+      girisYap(kullaniciBilgisi(data.user));
+      try { sessionStorage.setItem('lidya-giris-mesaji', 'Hesabınız oluşturuldu. Siparişinizi buradan takip edebilirsiniz.'); } catch (err) {}
+      location.href = 'hesabim.html#siparisler';
+      return;
+    }
+    oneri.querySelectorAll('input, button').forEach(g => { g.disabled = true; });
+    goster(`Son bir adım: ${bilgi.eposta} adresine doğrulama bağlantısı gönderdik. Bağlantıya tıklayınca hesabınız açılır.`, 'bilgi');
   });
   window.scrollTo(0, 0);
 }

@@ -12,7 +12,7 @@
 <body>
   <div id="ust"></div>
 
-  <!-- PROTOTİP: gerçek kayıt, şifre saklama veya sunucu yok. Formlar örnek kullanıcıyla giriş yapılmış gibi davranır. -->
+  <!-- Giriş, üyelik ve şifre yenileme Supabase Auth ile (js/supabase.js, js/giris.js). -->
   <main class="kap hesap-giris">
     <a class="geri-don" href="index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>Geri dön</a>
     <div class="sayfa-basi">
@@ -39,6 +39,7 @@
           <p>E-posta adresinize şifre yenileme bağlantısı gönderilir.</p>
           <button class="dugme dugme-cizgi dugme-genis" type="button" id="sifre-gonder">Bağlantı gönder</button>
         </div>
+        <p class="form-mesaj" data-mesaj hidden></p>
         <button class="dugme dugme-genis" type="submit">Giriş Yap</button>
       </form>
 
@@ -65,9 +66,33 @@
           <input type="checkbox" name="izin">
           <span>Kampanya, çekiliş ve yeniliklerden SMS/e-posta ile haberdar olmak istiyorum.</span>
         </label>
+        <p class="form-mesaj" data-mesaj hidden></p>
         <button class="dugme dugme-genis" type="submit">Üye Ol</button>
       </form>
 
+      <!-- Üyelik sonrası: e-posta doğrulama bekleniyor -->
+      <div class="dogrulama-panel" id="dogrulama-panel" hidden>
+        <div class="tamam-isaret" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7h16v11H4z"/><path d="M4 7l8 6 8-6"/></svg></div>
+        <h3>E-postanızı kontrol edin</h3>
+        <p><strong id="dogrulama-eposta"></strong> adresine bir doğrulama bağlantısı gönderdik. Bağlantıya tıklayınca hesabınız açılır ve giriş yapmış olursunuz.</p>
+        <p class="girdi-not">E-posta gelmediyse gereksiz (spam) klasörüne de bakın.</p>
+      </div>
+
+      <!-- Şifre yenileme bağlantısıyla gelindiğinde -->
+      <form class="hesap-form" id="yeni-sifre-form" hidden>
+        <h3>Yeni şifrenizi belirleyin</h3>
+        <label class="alan">Yeni şifre
+          <input class="metin-girdi" type="password" name="yeni" autocomplete="new-password" minlength="6" required>
+          <span class="girdi-not">En az 6 karakter.</span>
+        </label>
+        <label class="alan">Yeni şifre (tekrar)
+          <input class="metin-girdi" type="password" name="tekrar" autocomplete="new-password" minlength="6" required>
+        </label>
+        <p class="form-mesaj" data-mesaj hidden></p>
+        <button class="dugme dugme-genis" type="submit">Şifreyi kaydet</button>
+      </form>
+
+      <div class="giris-alt" id="giris-alt">
       <div class="ayirac"><span>ya da</span></div>
       <button class="dugme dugme-cizgi dugme-genis google-dugme" type="button" id="google">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 12h7"/></svg>
@@ -75,11 +100,14 @@
       </button>
 
       <a class="dugme dugme-cizgi dugme-genis misafir-dugme" id="misafir" href="sepet.html">Üye olmadan devam et</a>
+      </div>
     </div>
   </main>
 
   <div id="alt"></div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+  <script src="js/supabase.js"></script>
   <script src="js/fiyat.js"></script>
   <script src="js/iletisim.js"></script>
   <script src="js/ortak.js"></script>

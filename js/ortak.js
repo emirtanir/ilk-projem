@@ -74,9 +74,9 @@ function sepetSayaciGuncelle() {
 }
 
 /* =========================================================
-   HESAP (PROTOTİP) — gerçek kayıt / şifre / sunucu yok.
-   Giriş durumu, favoriler, kayıtlı tasarımlar ve adresler sadece
-   bu tarayıcının hafızasında tutulur. Gerçek sistem altyapıyla kurulacak.
+   HESAP — giriş, üyelik ve şifre Supabase Auth ile (js/supabase.js).
+   Favoriler, kayıtlı tasarımlar ve adresler şimdilik bu tarayıcının
+   hafızasında; sonraki adımda Supabase veritabanına taşınacak.
    ========================================================= */
 const hafizaYedek = {};
 function hafizaGetir(anahtar, varsayilan) {
@@ -93,12 +93,22 @@ function hafizaKaydet(anahtar, deger) {
   } catch (e) { /* hafıza kapalı ya da dolu */ }
 }
 
-// Butonlara basınca bu örnek kullanıcıyla giriş yapılmış gibi davranılır
-const ORNEK_KULLANICI = { ad: 'Elif Demir', eposta: 'elif.demir@ornek.com', telefon: '0532 000 00 00', izinSms: false, izinEposta: false };
-
+// Giriş durumu Supabase oturumundan gelir; sayfalar hızlı açılsın diye
+// kullanıcının özet bilgisi ('lidya-hesap') tarayıcıda da tutulur ve oturumla eşitlenir.
 function kullaniciGetir() { return hafizaGetir('lidya-hesap', null); }
+
+// Supabase kullanıcısından sitede kullandığımız bilgiler (ad, telefon, izinler: kayıt sırasında girilen ek bilgiler)
+function kullaniciBilgisi(user) {
+  const d = user.user_metadata || {};
+  return {
+    id: user.id, eposta: user.email,
+    ad: d.ad || d.full_name || d.name || '', telefon: d.telefon || '',
+    izinSms: !!d.izinSms, izinEposta: !!d.izinEposta,
+  };
+}
+
 function girisYap(bilgiler) {
-  hafizaKaydet('lidya-hesap', { ...ORNEK_KULLANICI, ...bilgiler });
+  hafizaKaydet('lidya-hesap', bilgiler);
   // Giriş yapmadan "Tasarımımı kaydet"e basıldıysa o tasarımı şimdi kaydet
   const bekleyen = hafizaGetir('lidya-bekleyen-tasarim', null);
   if (bekleyen) {
@@ -106,14 +116,38 @@ function girisYap(bilgiler) {
     hafizaKaydet('lidya-bekleyen-tasarim', null);
   }
 }
-function cikisYap() { hafizaKaydet('lidya-hesap', null); }
+async function cikisYap() {
+  hafizaKaydet('lidya-hesap', null);
+  if (sb) await sb.auth.signOut();
+}
 
-// Kayıtlı adresler (Hesabım > Adreslerim ve ödeme sayfası)
-const ORNEK_ADRESLER = [
-  { baslik: 'Ev', ad: ORNEK_KULLANICI.ad, telefon: ORNEK_KULLANICI.telefon, il: 'Antalya', ilce: 'Manavgat', adres: 'Örnek Mah. Çiçek Sok. No:12 D:3' },
-  { baslik: 'İş', ad: ORNEK_KULLANICI.ad, telefon: ORNEK_KULLANICI.telefon, il: 'Antalya', ilce: 'Muratpaşa', adres: 'Örnek Cad. No:45 Kat:2' },
-];
-function adreslerGetir() { return hafizaGetir('lidya-adresler', ORNEK_ADRESLER); }
+// Sayfa açılınca oturumu Supabase ile eşitle (süresi dolduysa, başka sekmede çıkış yapıldıysa…)
+const oturumHazir = (async () => {
+  if (!sb) return;
+  const { data } = await sb.auth.getSession();
+  const user = data.session && data.session.user;
+  if (user) girisYap(kullaniciBilgisi(user));
+  else hafizaKaydet('lidya-hesap', null);
+  hesapDugmesiGuncelle();
+})();
+if (sb) sb.auth.onAuthStateChange((olay, oturum) => {
+  if (olay === 'SIGNED_OUT') hafizaKaydet('lidya-hesap', null);
+  else if (oturum && oturum.user && olay !== 'INITIAL_SESSION') girisYap(kullaniciBilgisi(oturum.user));
+  hesapDugmesiGuncelle();
+});
+
+// Üst menüdeki hesap ikonu: giriş durumuna göre Hesabım ya da Giriş sayfasına gider
+function hesapDugmesiGuncelle() {
+  const dugme = document.querySelector('.hesap-dugme');
+  if (!dugme) return;
+  const girisli = !!kullaniciGetir();
+  dugme.classList.toggle('girisli', girisli);
+  dugme.href = girisli ? 'hesabim.html' : 'giris.html';
+  dugme.setAttribute('aria-label', girisli ? 'Hesabım' : 'Giriş yap / Üye ol');
+}
+
+// Kayıtlı adresler (Hesabım > Adreslerim ve ödeme sayfası). Veritabanına taşınana kadar tarayıcıda.
+function adreslerGetir() { return hafizaGetir('lidya-adresler', []); }
 
 // Kullanıcının yazdığı metni sayfaya güvenle koy
 const kacir = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
