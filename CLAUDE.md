@@ -4,6 +4,10 @@ Bu dosya projenin özetidir. Claude Code bu klasörde her açıldığında bunu 
 
 > **Durum:** Planlama aşaması. Altyapı kararı (bkz. "Açık Kararlar") verilmeden kod yazmaya başlama. Önce bu belgedeki açık soruları sahibine sor.
 
+> **GitHub kuralı:** Her istenen değişiklik bittikten sonra, kullanıcıya özet vermeden önce değişiklikleri Türkçe ve açıklayıcı bir commit mesajıyla commit'le ve GitHub'a push et. Şifre, API anahtarı, .env gibi gizli bilgileri asla commit'leme; bunlar .gitignore'da olsun. Push başarısız olursa kullanıcıya söyle.
+>
+> Repo: https://github.com/emirtanir/ilk-projem (dal: `main`). Terminalden giriş GitHub CLI ile (`~/.local/bin/gh`, `gh auth login` + `gh auth setup-git`).
+
 ---
 
 ## 1. İşletme

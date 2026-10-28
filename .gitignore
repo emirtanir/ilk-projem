@@ -1,0 +1,15 @@
+# macOS
+.DS_Store
+
+# Gizli bilgiler: şifreler, API anahtarları, ortam değişkenleri asla GitHub'a gitmez
+.env
+.env.*
+*.pem
+*.key
+secrets/
+gizli/
+
+# Editör / araç dosyaları
+.vscode/
+.idea/
+node_modules/
