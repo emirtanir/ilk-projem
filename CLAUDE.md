@@ -2,7 +2,7 @@
 
 Bu dosya projenin özetidir. Claude Code bu klasörde her açıldığında bunu okur. Kararlar değiştikçe güncellenmeli.
 
-> **Durum:** Planlama aşaması. Altyapı kararı (bkz. "Açık Kararlar") verilmeden kod yazmaya başlama. Önce bu belgedeki açık soruları sahibine sor.
+> **Durum:** Tasarım prototipi hazır (sadece HTML/CSS/JS, örnek verilerle). **Altyapı kararı verildi: Supabase** (bkz. bölüm 11). Gerçek sisteme (Supabase bağlantısı) geçmeden önce kalan açık soruları sahibine sor.
 
 > **GitHub kuralı:** Her istenen değişiklik bittikten sonra, kullanıcıya özet vermeden önce değişiklikleri Türkçe ve açıklayıcı bir commit mesajıyla commit'le ve GitHub'a push et. Şifre, API anahtarı, .env gibi gizli bilgileri asla commit'leme; bunlar .gitignore'da olsun. Push başarısız olursa kullanıcıya söyle.
 >
@@ -97,13 +97,13 @@ Arayüz **çok basit** olmalı: serbest çizim yok, adım adım seçim. Her seç
 ## 6. Sipariş yönetimi
 
 - Siparişlere bakacak kişiler: Emir, dükkan çalışanları, dükkan müdürü
-- Ayrı kullanıcı hesapları ve yetkiler olan bir yönetim paneli
+- Ayrı kullanıcı hesapları ve yetkiler olan bir yönetim paneli (Supabase üzerinde kendimiz yazacağız; hazır panel yok)
 - Yeni siparişte e-posta / telefon bildirimi
 - Panel **telefondan rahat kullanılmalı** (Emir dönem içinde İstanbul'da)
 
 ## 6a. Müşteri hesabı
 
-- **Prototipte sadece arayüz:** Gerçek kayıt, şifre saklama veya sunucu yok; butonlar örnek kullanıcıyla giriş yapılmış gibi davranır (bilgiler tarayıcı hafızasında). Gerçek hesap sistemi altyapı ile kurulacak.
+- **Prototipte sadece arayüz:** Gerçek kayıt, şifre saklama veya sunucu yok; butonlar örnek kullanıcıyla giriş yapılmış gibi davranır (bilgiler tarayıcı hafızasında). Gerçek hesap sistemi Supabase Auth ile kurulacak (bölüm 11).
 - **Üye olmadan alışveriş her zaman mümkün.** Sepette "Üye olmadan devam et" her zaman görünür ve en önde; yanında "Giriş Yap" ve "Üye Ol". Sipariş tamamlandı ekranında üye olmayana "Bilgilerinizi kaydedip hesap oluşturun" önerisi çıkar.
 - **Ticari ileti onayı ayrı ve isteğe bağlı:** Üye olurken KVKK aydınlatma metni onayı zorunlu; "Kampanya, çekiliş ve yeniliklerden SMS/e-posta ile haberdar olmak istiyorum" kutusu ayrı, isteğe bağlı ve varsayılan olarak işaretsiz. Hesap Bilgilerim'den SMS ve e-posta izni ayrı ayrı değiştirilebilir.
 - Favoriler: ürün kartı ve ürün detayında kalp ikonu. Kendi Tasarımını Yap'ta "Tasarımımı kaydet" (giriş yoksa giriş sayfasına yönlendirir, girişten sonra tasarım otomatik kaydedilir).
@@ -143,12 +143,30 @@ Arayüz **çok basit** olmalı: serbest çizim yok, adım adım seçim. Her seç
 - Ödeme şirketi komisyonu kaçınılmaz, satış başına ödenir.
 - Bakımı Emir yapacak, yani güncellemesi ve yönetimi kolay olmalı.
 
+## 11. Altyapı: Supabase
+
+- **Site:** Statik HTML/CSS/JS (şu anki prototip temel alınır), GitHub Pages'te yayında. Alan adı (`lidyakuyum.com`) buraya bağlanacak.
+- **Supabase (bedava katman, bölge: Frankfurt):**
+  - **Auth:** E-posta + şifre ve Google ile giriş. Şifreler Supabase'de güvenli (hash) saklanır.
+  - **Veritabanı (Postgres):** ürünler, müşteri profilleri, adresler, favoriler, kayıtlı tasarımlar, siparişler, ayarlar (altın gram fiyatı, satış ayarları). Her tabloda Row Level Security: müşteri sadece kendi verisini görür; yönetici rolleri (Emir, dükkan müdürü, çalışanlar) siparişleri görür.
+  - **Storage:** ürün fotoğrafları ve Lazerle Resim için yüklenen müşteri fotoğrafları (fotoğraflar gizli klasörde).
+  - **Edge Functions:** ödeme şirketi bildirimi (ödeme alındı), yeni sipariş e-posta/telefon bildirimi gibi sunucu tarafı işler.
+- **Ödeme:** iyzico veya PayTR. Kart bilgisi asla bizde tutulmaz.
+- **Yönetim paneli:** Hazır panel yok; telefondan rahat kullanılan basit bir panel sayfası yazılacak (siparişler, durum güncelleme, altın fiyatı girişi, ürün ekleme).
+- **Anahtarlar:** Supabase proje adresi ve `anon` (public) anahtarı sitede durabilir. `service_role` anahtarı, ödeme şirketi gizli anahtarları **asla** repoya ve site koduna girmez; sadece Supabase Edge Function gizli ayarlarında durur.
+- **Bedava katman sınırları:** Depolama ve kullanım sınırlı, otomatik yedek yok, uzun süre kullanılmayan proje durdurulabilir. Koşullar değişebilir; kurulumda güncel sınırlar kontrol edilecek.
+
 ---
 
 ## Açık Kararlar
 
-- [ ] **Altyapı:** Şu anki eğilim **WooCommerce (WordPress) + özel eklentiler** (fiyat formülü, tasarlayıcı). Alternatifler: hazır altyapı (ikas, Shopify) ya da sıfırdan özel yapım.
-- [ ] Hosting (altyapıya göre)
+- [x] **Altyapı:** **Supabase** + statik site + iyzico/PayTR (ayrıntı: bölüm 11). WooCommerce, ikas, Shopify seçilmedi; sebep: aylık ücret olmasın.
+- [x] Hosting: site GitHub Pages (ileride Cloudflare Pages da olabilir), veri Supabase. Aylık ücret yok.
+- [ ] **KVKK – yurt dışına aktarım:** Supabase sunucusu Avrupa'da (Frankfurt). Standart sözleşme + KVKK Kurumu'na bildirim gerekiyor; avukat/muhasebeciyle teyit edilecek. Aydınlatma metninde belirtilecek.
+- [ ] **İYS kaydı:** Kampanya/çekiliş SMS ve e-posta onayları İleti Yönetim Sistemi'ne kaydedilmeli. Kim yapacak?
+- [ ] **VERBİS:** Muafiyet teyit edilecek.
+- [ ] **Yedekleme:** Supabase bedava katmanında otomatik yedek yok; düzenli yedeği kendimiz alacağız (yöntem belirlenecek).
+- [ ] **Ödeme şirketi:** iyzico mu PayTR mı? (Aileden Beklenen Cevaplar 4)
 - [ ] **Ücretsiz kargo sınırı, kargo ücreti ve "Uygun Hediyeler" fiyat aralıkları:** prototipte örnek değerler (2.000 TL / 150 TL / 1.000-5.000-7.500 TL). Gerçek fiyatlar girilirken, siteyi yayına almadan önce birlikte güncellenecek (`js/fiyat.js` → `SATIS_AYARLARI`).
 - [ ] **Kendi Tasarımını Yap kapora oranı** ve kalan tutarın ne zaman / nasıl alınacağı (prototipte örnek: %30, kalan kargodan önce). Ödeme altyapısı seçilirken netleşmeli.
 
