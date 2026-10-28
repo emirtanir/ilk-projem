@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Hesabım · Lidya Kuyumculuk</title>
+  <link rel="icon" href="logo/lidya-logo-yuvarlak.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600&family=Great+Vibes&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/stil.css">
+</head>
+<body>
+  <div id="ust"></div>
+
+  <!-- PROTOTİP: siparişler ve adresler örnek veridir (js/hesap.js). Gerçek sistem altyapıyla kurulacak. -->
+  <main class="kap hesap-sayfa">
+    <a class="geri-don" href="index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>Geri dön</a>
+    <div class="hesap-bas">
+      <span class="kucuk-baslik">Hesabım</span>
+      <h1 id="hesap-selam"></h1>
+    </div>
+
+    <div class="hesap-duzen">
+      <nav class="hesap-menu" aria-label="Hesap menüsü">
+        <a href="#siparisler" data-bolum="siparisler">Siparişlerim</a>
+        <a href="#tasarimlar" data-bolum="tasarimlar">Tasarımlarım</a>
+        <a href="#favoriler" data-bolum="favoriler">Favorilerim</a>
+        <a href="#adresler" data-bolum="adresler">Adreslerim</a>
+        <a href="#bilgiler" data-bolum="bilgiler">Hesap Bilgilerim</a>
+        <button type="button" class="cikis" id="cikis">Çıkış Yap</button>
+      </nav>
+
+      <div class="hesap-icerik" id="hesap-icerik"></div>
+    </div>
+  </main>
+
+  <div id="alt"></div>
+
+  <script src="js/fiyat.js"></script>
+  <script src="js/urunler.js"></script>
+  <script src="js/iletisim.js"></script>
+  <script src="js/ortak.js"></script>
+  <script src="js/onizleme.js"></script>
+  <script src="js/hesap.js"></script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Giriş Yap / Üye Ol · Lidya Kuyumculuk</title>
+  <link rel="icon" href="logo/lidya-logo-yuvarlak.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/stil.css">
+</head>
+<body>
+  <div id="ust"></div>
+
+  <!-- PROTOTİP: gerçek kayıt, şifre saklama veya sunucu yok. Formlar örnek kullanıcıyla giriş yapılmış gibi davranır. -->
+  <main class="kap hesap-giris">
+    <a class="geri-don" href="index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>Geri dön</a>
+    <div class="sayfa-basi">
+      <h1 id="giris-baslik">Hoş geldiniz</h1>
+      <p id="giris-not">Siparişlerinizi takip etmek, tasarımlarınızı ve favorilerinizi saklamak için giriş yapın.</p>
+    </div>
+
+    <div class="form-kart">
+      <div class="sekmeler form-sekmeler" role="tablist">
+        <button class="sekme secili" data-sekme="giris" role="tab" aria-selected="true">Giriş Yap</button>
+        <button class="sekme" data-sekme="uye" role="tab" aria-selected="false">Üye Ol</button>
+      </div>
+
+      <!-- Giriş -->
+      <form class="hesap-form" id="giris-form">
+        <label class="alan">E-posta
+          <input class="metin-girdi" type="email" name="eposta" autocomplete="email" inputmode="email" required>
+        </label>
+        <label class="alan">Şifre
+          <input class="metin-girdi" type="password" name="sifre" autocomplete="current-password" required>
+        </label>
+        <button class="metin-link sifre-unuttum" type="button" id="sifre-unuttum">Şifremi unuttum</button>
+        <div class="sifre-panel" id="sifre-panel" hidden>
+          <p>E-posta adresinize şifre yenileme bağlantısı gönderilir.</p>
+          <button class="dugme dugme-cizgi dugme-genis" type="button" id="sifre-gonder">Bağlantı gönder</button>
+        </div>
+        <button class="dugme dugme-genis" type="submit">Giriş Yap</button>
+      </form>
+
+      <!-- Üye ol -->
+      <form class="hesap-form" id="uye-form" hidden>
+        <label class="alan">Ad soyad
+          <input class="metin-girdi" type="text" name="ad" autocomplete="name" required>
+        </label>
+        <label class="alan">E-posta
+          <input class="metin-girdi" type="email" name="eposta" autocomplete="email" inputmode="email" required>
+        </label>
+        <label class="alan">Telefon
+          <input class="metin-girdi" type="tel" name="telefon" autocomplete="tel" inputmode="tel" placeholder="05xx xxx xx xx" required>
+        </label>
+        <label class="alan">Şifre
+          <input class="metin-girdi" type="password" name="sifre" autocomplete="new-password" minlength="6" required>
+          <span class="girdi-not">En az 6 karakter.</span>
+        </label>
+        <label class="onay">
+          <input type="checkbox" name="kvkk" required>
+          <span><a href="kvkk.html" target="_blank" rel="noopener">KVKK Aydınlatma Metni</a>’ni okudum. <em>(zorunlu)</em></span>
+        </label>
+        <label class="onay">
+          <input type="checkbox" name="izin">
+          <span>Kampanya, çekiliş ve yeniliklerden SMS/e-posta ile haberdar olmak istiyorum.</span>
+        </label>
+        <button class="dugme dugme-genis" type="submit">Üye Ol</button>
+      </form>
+
+      <div class="ayirac"><span>ya da</span></div>
+      <button class="dugme dugme-cizgi dugme-genis google-dugme" type="button" id="google">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 12h7"/></svg>
+        Google ile devam et
+      </button>
+
+      <a class="dugme dugme-cizgi dugme-genis misafir-dugme" id="misafir" href="sepet.html">Üye olmadan devam et</a>
+    </div>
+  </main>
+
+  <div id="alt"></div>
+
+  <script src="js/fiyat.js"></script>
+  <script src="js/iletisim.js"></script>
+  <script src="js/ortak.js"></script>
+  <script src="js/giris.js"></script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Hakkımızda · Lidya Kuyumculuk</title>
+  <link rel="icon" href="logo/lidya-logo-yuvarlak.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/stil.css">
+</head>
+<body>
+  <div id="ust"></div>
+
+  <!--
+    FOTOĞRAFLAR: Her <figure class="foto-yeri"> bir fotoğraf yer tutucusudur.
+    Gerçek fotoğraf gelince içini şununla değiştirin:
+      <img src="foto/dukkan-dis.jpg" alt="Dükkânımızın dışı">
+  -->
+
+  <main class="hakkimizda">
+    <div class="kap sayfa-basi">
+      <hr class="altin-cizgi">
+      <h1>Hikâyemiz</h1>
+    </div>
+
+    <section class="kap metin-blok">
+      <h2>Bir aile mesleği</h2>
+      <p>Kuyumculuk bizim için bir iş olmanın ötesinde, kuşaktan kuşağa aktarılan bir meslek. Lidya Kuyum, 1989 yılında Metin Tanır tarafından Manavgat’ta kuruldu. Bugün üçüncü kuşak olarak aynı özen ve güvenle çalışmaya devam ediyoruz.</p>
+    </section>
+
+    <section class="kap foto-blok">
+      <figure class="foto-yeri genis" data-dosya="dukkan-dis.jpg"></figure>
+    </section>
+
+    <section class="kap vurgular">
+      <div class="vurgu"><strong>1989</strong></div>
+      <div class="vurgu"><strong>3. Kuşak</strong></div>
+      <div class="vurgu"><strong>AJA Üyesi</strong></div>
+    </section>
+
+    <section class="kap metin-blok">
+      <h2>Güvenle geçen yıllar</h2>
+      <p>Müşterilerimizin çoğu bizi yıllardır tanıyor ve altınlarını hep bizden alıyor. Bu güven, bizim için her şeyden önemli. Antalya Kuyumcular Derneği (AJA) üyesiyiz ve sattığımız tüm ürünler garantilidir.</p>
+    </section>
+
+    <section class="kap foto-blok">
+      <figure class="foto-yeri genis" data-dosya="dukkan-ic.jpg"></figure>
+    </section>
+
+    <section class="kap metin-blok">
+      <h2>Geniş koleksiyon, doğru fiyat</h2>
+      <p>Elmas, 14 ayar ve 22 ayar altında geniş bir koleksiyon sunuyoruz. Altın ve elması toptan aldığımız için ürünlerimizi gereksiz kâr marjları eklemeden, uygun fiyatlarla sunabiliyoruz.</p>
+    </section>
+
+    <section class="kap foto-blok">
+      <figure class="foto-yeri genis" data-dosya="vitrin.jpg"></figure>
+    </section>
+
+    <section class="kap metin-blok">
+      <h2>Yetkili satış noktası</h2>
+      <p>10 yılı aşkın süredir Atasay’ın yetkili satış noktasıyız. Atasay’ın yanında Favori, Koçak ve daha birçok markanın ürünlerini de aynı güvenle sunuyoruz.</p>
+    </section>
+
+    <section class="kap metin-blok">
+      <h2>Kendi dilinizde hizmet</h2>
+      <p>İngilizce, Almanca ve Rusça konuşan satış ekibimizle misafirlerimizi kendi dillerinde ağırlıyoruz.</p>
+    </section>
+
+    <section class="kap metin-blok">
+      <h2>Şubelerimiz</h2>
+      <p>Manavgat’taki mağazamızın yanı sıra Hotel Alba Resort, Hotel Alba Royal ve Hotel Alba Queen’de de şubelerimiz bulunuyor. Otellerden mağazamıza transfer hizmeti sunuyoruz.</p>
+    </section>
+
+    <section class="kap subeler">
+      <div class="sube ana"><span>Ana mağaza</span><strong>Manavgat</strong></div>
+      <div class="sube"><span>Şube</span><strong>Hotel Alba Resort</strong></div>
+      <div class="sube"><span>Şube</span><strong>Hotel Alba Royal</strong></div>
+      <div class="sube"><span>Şube</span><strong>Hotel Alba Queen</strong></div>
+    </section>
+
+    <section class="kap metin-blok">
+      <h2>Dükkânımızdan ekranınıza</h2>
+      <p>Instagram’da bizi takip eden geniş topluluğumuz sayesinde ürünlerimizi her gün binlerce kişiyle paylaşıyoruz. Şimdi de yılların deneyimini internete taşıyoruz. Sitemizden alışveriş yaparken, mağazamıza gelmiş gibi aynı ilgiyi ve güveni bulacaksınız. Aklınıza takılan her şey için WhatsApp hattımızdan bize ulaşabilirsiniz.</p>
+    </section>
+
+    <section class="bolum iletisim-bolum">
+      <div class="kap" id="iletisim-icerik"></div>
+    </section>
+  </main>
+
+  <div id="alt"></div>
+
+  <script src="js/fiyat.js"></script>
+  <script src="js/iletisim.js"></script>
+  <script src="js/ortak.js"></script>
+  <script>
+    const KAMERA = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>';
+    document.querySelectorAll('.foto-yeri').forEach(f => {
+      if (!f.querySelector('img')) f.innerHTML = `${KAMERA}<span>${f.dataset.dosya}</span>`;
+    });
+    document.getElementById('iletisim-icerik').innerHTML = iletisimBolumuHTML();
+  </script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Lidya Kuyumculuk · Manavgat</title>
+  <link rel="icon" href="logo/lidya-logo-yuvarlak.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Great+Vibes&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/stil.css">
+</head>
+<body>
+  <div id="ust"></div>
+
+  <main>
+    <!-- Giriş: başlık + koleksiyonlar -->
+    <section class="giris">
+      <div class="kap giris-duzen">
+        <div class="giris-baslik">
+          <span class="kucuk-baslik">1989’dan beri Manavgat’ta</span>
+          <h1>Zarafet,<br>nesilden nesile.</h1>
+        </div>
+        <div class="giris-kartlar" id="koleksiyonlar"></div>
+        <div class="giris-alt">
+          <p>14 ve 22 ayar minimal altın takılar, doğal taş koleksiyonu ve size özel tasarımlar.</p>
+          <div class="giris-dugmeler">
+            <a class="dugme" href="urunler.html">Koleksiyonu Keşfet</a>
+            <a class="dugme dugme-cizgi" href="tasarla.html">Kendi Tasarımını Yap</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Öne çıkan ürünler -->
+    <section class="bolum kap">
+      <div class="bolum-baslik">
+        <span class="kucuk-baslik">Seçtiklerimiz</span>
+        <h2>Öne Çıkan Ürünler</h2>
+      </div>
+      <div class="urun-izgara one-cikan-izgara" id="one-cikanlar"></div>
+      <div class="ortala"><a class="dugme dugme-cizgi" href="urunler.html">Tüm Ürünler</a></div>
+    </section>
+
+    <!-- Doğal Taş -->
+    <section class="bolum kap">
+      <div class="tanitim">
+        <div class="tanitim-gorsel" id="tas-gorsel"></div>
+        <div>
+          <span class="kucuk-baslik">Koleksiyon</span>
+          <h2>Doğal Taş</h2>
+          <p>Her taşın bir hikâyesi var. Altınla buluşan ya da tek başına parlayan doğal taşlar, size en yakın anlamı taşıyanı seçmeniz için.</p>
+          <div class="tas-listesi" id="tas-listesi"></div>
+          <a class="dugme dugme-cizgi" href="urunler.html?koleksiyon=dogal-tas">Doğal Taşları Gör</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Kendi Tasarımını Yap -->
+    <section class="bolum tasarim-tanitim">
+      <div class="kap tanitim ters">
+        <div class="tanitim-gorsel isim-onizleme-tanitim" id="tanitim-onizleme">
+        </div>
+        <div>
+          <span class="kucuk-baslik">Size özel</span>
+          <h2>Kendi Tasarımını Yap</h2>
+          <p>Birkaç adımda seçin, önizlemeyi ve fiyatı anında görün. Özenle üretilip en geç 3 iş günü içinde kargoya verilir.</p>
+          <ul class="tasarim-secenekleri">
+            <li><span>İsim Kolyesi</span><small>isim · yazı stili · ayar · zincir</small></li>
+            <li><span>Harf Kolye</span><small>harf · model · ayar</small></li>
+            <li><span>Lazerle Resim</span><small>fotoğraf · plaka · ayar</small></li>
+          </ul>
+          <a class="dugme" href="tasarla.html">Tasarlamaya Başla</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Markalar -->
+    <section class="bolum kap">
+      <div class="bolum-baslik">
+        <span class="kucuk-baslik">Markalar</span>
+        <h2>Güvendiğiniz markalar</h2>
+      </div>
+      <div class="markalar">
+        <a href="urunler.html?marka=Atasay">Atasay</a>
+        <a href="urunler.html?marka=Favori">Favori</a>
+        <a href="urunler.html?marka=Koçak">Koçak</a>
+      </div>
+      <p class="marka-not">Lidya Kuyumculuk, Atasay yetkili satış noktasıdır.</p>
+    </section>
+
+    <!-- Aile hikâyesi -->
+    <section class="bolum kap">
+      <div class="hikaye">
+        <hr class="altin-cizgi">
+        <h2>1989’dan Beri</h2>
+        <p>Kuyumculuk, ailemizin mesleği. 1989’dan beri Manavgat’ta, üçüncü kuşak olarak müşterilerimize hizmet veriyoruz. Yıllardır bizi tercih eden ailelerin güveni, en değerli birikimimiz.</p>
+        <a class="dugme dugme-cizgi" href="hakkimizda.html">Hikâyemiz</a>
+      </div>
+    </section>
+
+    <!-- İletişim -->
+    <section class="bolum iletisim-bolum" id="iletisim">
+      <div class="kap">
+        <div class="bolum-baslik">
+          <span class="kucuk-baslik">İletişim</span>
+          <h2>Aklınıza takılan bir şey mi var?</h2>
+          <p>Ürünler, ölçüler ya da özel tasarımlar için bizi arayın, WhatsApp’tan yazın ya da mağazamıza uğrayın.</p>
+        </div>
+        <div id="iletisim-icerik"></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="alt"></div>
+
+  <script src="js/fiyat.js"></script>
+  <script src="js/urunler.js"></script>
+  <script src="js/iletisim.js"></script>
+  <script src="js/ortak.js"></script>
+  <script src="js/onizleme.js"></script>
+  <script>
+    document.getElementById('koleksiyonlar').innerHTML = Object.entries(KOLEKSIYONLAR).map(([k, v]) =>
+      `<a class="giris-kart" href="urunler.html?koleksiyon=${k}">
+        <div class="giris-kart-gorsel">
+          ${gorselHTML(v.ikon, v.ton, v.gorsel)}
+          <img src="foto/${v.gorsel}" alt="${v.ad} koleksiyonu" onload="this.classList.add('yuklendi')" onerror="this.remove()">
+        </div>
+        <h3>${v.ad} <span aria-hidden="true">→</span></h3>
+        <p>${v.aciklama}</p>
+      </a>`
+    ).join('');
+    document.getElementById('one-cikanlar').innerHTML = ONE_CIKANLAR
+      .map(id => URUNLER.find(u => u.id === id)).filter(Boolean).map(urunKartiHTML).join('');
+    document.getElementById('tas-gorsel').innerHTML = gorselHTML('kolye', 'firuze', 'Doğal taş görseli');
+    document.getElementById('tas-listesi').innerHTML = TASLAR.map(t =>
+      `<div class="tas"><span class="tas-nokta ton-${t.ton}"></span><div><strong>${t.ad}</strong><p>${t.anlam}</p></div></div>`
+    ).join('');
+    document.getElementById('iletisim-icerik').innerHTML = iletisimBolumuHTML();
+    const tanitim = document.getElementById('tanitim-onizleme');
+    tanitim.innerHTML = svgKabi('14', isimOnizleme({ isim: 'Çağla', stil: 'elyazisi' }));
+    isimZinciriniBagla(tanitim);
+  </script>
+</body>
+</html>

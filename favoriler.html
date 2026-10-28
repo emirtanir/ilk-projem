@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Favorilerim · Lidya Kuyumculuk</title>
+  <link rel="icon" href="logo/lidya-logo-yuvarlak.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/stil.css">
+</head>
+<body>
+  <div id="ust"></div>
+
+  <!-- Favoriler giriş yapmadan da çalışır (bu tarayıcının hafızasında). Hesabım > Favorilerim aynı listeyi gösterir. -->
+  <main class="kap favori-sayfa">
+    <a class="geri-don" href="index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>Geri dön</a>
+    <div class="sayfa-basi"><h1>Favorilerim</h1></div>
+    <div id="favoriler"></div>
+  </main>
+
+  <div id="alt"></div>
+
+  <script src="js/fiyat.js"></script>
+  <script src="js/urunler.js"></script>
+  <script src="js/iletisim.js"></script>
+  <script src="js/ortak.js"></script>
+  <script>
+    // Kalbe tekrar dokunulan ürün listeden kalksın (kalp işlemi js/ortak.js içinde)
+    function favorileriCiz() {
+      const urunler = favorilerGetir().map(id => URUNLER.find(u => u.id === id)).filter(Boolean);
+      document.getElementById('favoriler').innerHTML = urunler.length
+        ? `<div class="urun-izgara favori-izgara">${urunler.map(urunKartiHTML).join('')}</div>`
+        : `<div class="hesap-bos"><p>Henüz favori ürününüz yok. Beğendiğiniz ürünlerdeki kalbe dokunun, burada görünsün.</p><a class="dugme" href="urunler.html">Ürünlere göz at</a></div>`;
+    }
+    favorileriCiz();
+    document.getElementById('favoriler').addEventListener('click', e => {
+      if (e.target.closest('[data-favori]')) setTimeout(favorileriCiz, 0);
+    });
+  </script>
+</body>
+</html>
