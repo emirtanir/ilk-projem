@@ -6,7 +6,9 @@ Bu dosya projenin özetidir. Claude Code bu klasörde her açıldığında bunu 
 
 > **GitHub kuralı:** Her istenen değişiklik bittikten sonra, kullanıcıya özet vermeden önce değişiklikleri Türkçe ve açıklayıcı bir commit mesajıyla commit'le ve GitHub'a push et. Şifre, API anahtarı, .env gibi gizli bilgileri asla commit'leme; bunlar .gitignore'da olsun. Push başarısız olursa kullanıcıya söyle.
 >
-> Repo: https://github.com/emirtanir/ilk-projem (dal: `main`). Terminalden giriş GitHub CLI ile (`~/.local/bin/gh`, `gh auth login` + `gh auth setup-git`).
+> Repo: https://github.com/emirtanir/ilk-projem (dal: `main`, herkese açık). Terminalden giriş GitHub CLI ile (`~/.local/bin/gh`, `gh auth login` + `gh auth setup-git`).
+>
+> **Site (GitHub Pages):** https://emirtanir.github.io/ilk-projem/ — `main` dalına her push'ta otomatik yayınlanır. Push'tan sonra Pages yayını bitene kadar bekle (`gh api repos/emirtanir/ilk-projem/pages/builds/latest` → `status: built`), sonra siteyi kullanıcının tarayıcısında aç: `open "https://emirtanir.github.io/ilk-projem/?v=<kısa commit>"` (sondaki `?v=` eski sürümün önbellekten gelmesini önler). Kullanıcı ayrıca istemedikçe her push'tan sonra bunu yap.
 
 ---
 
