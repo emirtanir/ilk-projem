@@ -471,7 +471,7 @@ body.cubuklu .wa-yuzen { bottom: calc(92px + env(safe-area-inset-bottom, 0px)); 
 @media (max-width: 859px) {
   .onizleme svg { max-height: 34vh; margin: 0 auto; }
   /* Sabit önizleme sayfa sonunda son öğelerin (fiyat, kaydet) üstüne binmesin */
-  .tasarim-kaydet { margin-bottom: calc(34vh - 10px); }
+  .ozel-uretim { margin-bottom: calc(34vh + 30px); }
 }
 [hidden] { display: none !important; }
 
@@ -892,3 +892,18 @@ textarea.metin-girdi { padding: 12px 16px; font-size: 1rem; resize: vertical; mi
   .menu a { font-size: .82rem; letter-spacing: .01em; }
   .menu a.menu-vurgu { padding: 6px 12px; }
 }
+
+/* Kendi Tasarımını Yap: kişiye özel ürün kuralları */
+.yazilacak-isim { margin: 0; padding: 12px 16px 14px; border-top: 1px solid var(--cizgi); font-size: .85rem; color: var(--yazi-soluk); text-align: center; }
+.yazilacak-isim strong { display: block; font-size: 1.6rem; line-height: 1.2; color: var(--yazi); font-weight: 600; letter-spacing: .02em; word-break: break-word; }
+.ozel-uretim { display: grid; gap: 12px; margin-top: 14px; }
+.iade-bilgi { display: flex; gap: 10px; align-items: flex-start; background: #fff; border: 1px solid var(--pembe); border-radius: var(--yuvarlak); padding: 14px 16px; }
+.iade-bilgi svg { flex: none; width: 20px; height: 20px; margin-top: 1px; fill: none; stroke: var(--vurgu-yazi); stroke-width: 1.6; stroke-linecap: round; }
+.iade-bilgi p { margin: 0; font-size: .84rem; line-height: 1.55; }
+.ozel-onay { background: #fff; border: 1px solid var(--cizgi); border-radius: 10px; padding: 12px 14px; font-weight: 500; }
+.ozel-onay.hatali { border-color: var(--vurgu-yazi); background: var(--pembe-acik); }
+.onay-uyari { margin: -4px 0 0; font-size: .8rem; color: var(--vurgu-yazi); font-weight: 500; }
+.wa-onay { display: flex; gap: 10px; align-items: flex-start; }
+.wa-onay svg { flex: none; width: 20px; height: 20px; fill: none; stroke: var(--yazi); stroke-width: 1.4; }
+.ozel-etiket { display: inline-block; margin: 2px 0 6px; padding: 2px 9px; border-radius: 999px; background: var(--pembe-acik); color: var(--vurgu-yazi); font-size: .7rem; font-weight: 600; letter-spacing: .02em; }
+.ozel-onay { scroll-margin-bottom: 110px; }

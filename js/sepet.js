@@ -22,6 +22,7 @@ function sepetCiz() {
           ${gorselHTML(k.kategori, k.ton)}
           <div>
             <h3>${k.ad}</h3>
+            ${k.siparisUsulu ? '<span class="ozel-etiket">Kişiye özel · İade edilemez</span>' : ''}
             <p class="detay-yazi">${k.detay}</p>
             <div class="kalem-alt">
               <div class="adet">

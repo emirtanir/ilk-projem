@@ -29,6 +29,7 @@
       <div class="onizleme">
         <div id="onizleme-svg"></div>
         <div class="onizleme-alt"><span>Önizleme</span><span id="onizleme-bilgi"></span></div>
+        <p class="yazilacak-isim" id="yazilacak-isim" hidden>Yazılacak isim: <strong id="yazilacak-isim-deger"></strong></p>
       </div>
 
       <div>
@@ -42,6 +43,18 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10v16l-5-3.6L7 20z"/></svg>
           Tasarımımı kaydet
         </button>
+        <!-- Kişiye özel ürün: iade bilgisi ve zorunlu onay (işaretlenmeden sepete eklenmez) -->
+        <div class="ozel-uretim">
+          <div class="iade-bilgi">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5.5M12 7.6v.2"/></svg>
+            <p>Bu ürün size özel üretildiği için iade ve değişim kapsamında değildir. Üretim hatalarında ücretsiz yeniden üretim yapıyoruz. Üretime başlanana kadar siparişinizi ücretsiz iptal edebilirsiniz.</p>
+          </div>
+          <label class="onay ozel-onay" id="ozel-onay">
+            <input type="checkbox" id="ozel-onay-kutu">
+            <span>Yazımı ve seçimlerimi kontrol ettim, kişiye özel ürünlerin iade edilemediğini biliyorum.</span>
+          </label>
+          <p class="onay-uyari" id="onay-uyari" hidden>Sepete eklemek için lütfen yukarıdaki kutuyu işaretleyin.</p>
+        </div>
         <div class="mobil-cubuk tasarla-cubuk">
           <div class="cubuk-fiyat"><span class="tahmini-fiyat" id="fiyat-deger"></span><small id="cubuk-bilgi"></small></div>
           <button class="dugme" id="sepete-ekle">Sepete Ekle</button>

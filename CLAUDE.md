@@ -81,6 +81,12 @@ Arayüz **çok basit** olmalı: serbest çizim yok, adım adım seçim. Her seç
 
 - **Sipariş usulü üretim, tahmini fiyat + kapora:** Ürünler sipariş üzerine üretildiği için sitede tahmini fiyat (≈) gösterilir. Siparişte tahmini fiyatın bir kısmı kapora olarak alınır; kesin fiyat üretimden sonra tartıma göre bildirilir, kalan tutar kargodan önce ödenir. Sepette "Şimdi ödenecek" ve "Kalan" ayrı gösterilir. Kapora oranı `js/fiyat.js` → `SATIS_AYARLARI.tasarimKaporaOrani` (prototipte örnek %30).
 
+- **İade ve onay kuralları (kişiye özel ürünler):**
+  - **Cayma hakkı yok:** Kişiye özel üretildiği için iade ve değişim kapsamında değil. **Üretim hatası hariç:** üretim hatalarında ücretsiz yeniden üretim yapılır.
+  - **Üretim öncesi ücretsiz iptal:** Üretime başlanana kadar sipariş ücretsiz iptal edilebilir.
+  - **Lazerle resimde üretim öncesi WhatsApp onayı:** Fotoğrafın önizlemesi üretimden önce müşterinin onayına WhatsApp'tan sunulur.
+  - Sitede: tasarım ekranında "Sepete Ekle"nin hemen üstünde iade bilgi kutusu ve zorunlu onay kutusu ("Yazımı ve seçimlerimi kontrol ettim, kişiye özel ürünlerin iade edilemediğini biliyorum."); işaretlenmeden sepete eklenmez. İsim kolyesinde önizlemenin altında "Yazılacak isim: …" büyük gösterilir. Sepette bu ürünlerde "Kişiye özel · İade edilemez" etiketi var.
+
 İlk sürümde üç ürün (dükkanda en çok yapılanlar):
 1. **İsim kolyesi:** isim gir → ayar seç → zincir uzunluğu seç. Yazı stili seçimi yok: her zaman el yazısı ("Modern" ve "Klasik" stil yok)
 2. **Harf kolye:** harf seç → ayar seç (model seçimi yok; Ğ harfi yok)

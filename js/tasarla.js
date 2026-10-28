@@ -47,7 +47,7 @@ function adimlariCiz() {
           <strong>${s.foto ? 'Fotoğraf yüklendi ✓' : 'Fotoğraf seçin'}</strong>
           <span class="girdi-not">${s.foto ? s.dosyaAdi + ' · değiştirmek için dokunun' : 'Telefonunuzdan ya da bilgisayarınızdan'}</span>
         </label>
-        <div class="onay-notu">Fotoğrafınız dükkânımız tarafından kontrol edilir; uygunluğu için size onay verildikten sonra üretime geçilir.</div>`) +
+        <div class="onay-notu wa-onay">${IKON_WA}<span>Fotoğrafınızın önizlemesini üretimden önce WhatsApp'tan onayınıza sunacağız.</span></div>`) +
       adim(2, 'Plaka şekli seçin', `<div class="secenekler">${secenekDugmeleri('sekil', SEKILLER, s.sekil)}</div>`) +
       ayarAdimi(3, s) +
       '<p class="girdi-not">45 cm zincir dahildir.</p>';
@@ -98,6 +98,9 @@ function guncelle(gecis = true) {
   const onizlemeAlani = document.getElementById('onizleme-svg');
   onizlemeAlani.innerHTML = svgKabi(s.ayar, onizleme);
   if (durum.tur === 'isim') isimZinciriniBagla(onizlemeAlani);
+  // İsim kolyesinde yazılacak ismi önizlemenin altında büyük ve net tekrar göster
+  document.getElementById('yazilacak-isim').hidden = durum.tur !== 'isim';
+  if (durum.tur === 'isim') document.getElementById('yazilacak-isim-deger').textContent = s.isim.trim() || '—';
   if (gecis) gecisOynat(onizlemeAlani, 'onizleme-gecis');
 
   const { gram, fiyat } = tasarimHesapla(durum.tur, s);
@@ -121,6 +124,7 @@ document.getElementById('sekmeler').addEventListener('click', e => {
   const sekme = e.target.closest('.sekme');
   if (!sekme) return;
   durum.tur = sekme.dataset.tur;
+  ozelOnay.checked = false;
   document.querySelectorAll('.sekme').forEach(b => b.classList.toggle('secili', b === sekme));
   adimlariCiz();
   guncelle();
@@ -156,7 +160,21 @@ document.getElementById('adimlar').addEventListener('change', e => {
   okuyucu.readAsDataURL(dosya);
 });
 
+// Kişiye özel ürün: onay kutusu işaretlenmeden sepete eklenmez
+const ozelOnay = document.getElementById('ozel-onay-kutu');
+ozelOnay.addEventListener('change', () => {
+  document.getElementById('onay-uyari').hidden = true;
+  document.getElementById('ozel-onay').classList.remove('hatali');
+});
+
 document.getElementById('sepete-ekle').addEventListener('click', () => {
+  if (!ozelOnay.checked) {
+    document.getElementById('onay-uyari').hidden = false;
+    document.getElementById('ozel-onay').classList.add('hatali');
+    document.getElementById('ozel-onay').scrollIntoView({ block: 'end', behavior: hareketAz ? 'auto' : 'smooth' });
+    ozelOnay.focus({ preventScroll: true });
+    return;
+  }
   sepeteEkle(tasarimKalemi(durum.tur, durum[durum.tur]));
 });
 
