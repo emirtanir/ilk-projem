@@ -1,195 +1,239 @@
-# Lidya Kuyumculuk – Online Satış Sitesi
+# Lidya Kuyum – Online Satış Sitesi
 
-Bu dosya projenin özetidir. Claude Code bu klasörde her açıldığında bunu okur. Kararlar değiştikçe güncellenmeli.
+Bu dosya projenin tek doğru kaynağıdır. Claude Code bu klasörde her açıldığında bunu okur. Bir karar değiştiğinde bu dosya da güncellenmeli; kodla bu dosya çelişirse bu dosya geçerlidir.
 
-> **Durum:** Tasarım prototipi hazır (sadece HTML/CSS/JS, örnek verilerle). **Altyapı kararı verildi: Supabase** (bkz. bölüm 11). Gerçek sisteme (Supabase bağlantısı) geçmeden önce kalan açık soruları sahibine sor.
-
-> **GitHub kuralı:** Her istenen değişiklik bittikten sonra, kullanıcıya özet vermeden önce değişiklikleri Türkçe ve açıklayıcı bir commit mesajıyla commit'le ve GitHub'a push et. Şifre, API anahtarı, .env gibi gizli bilgileri asla commit'leme; bunlar .gitignore'da olsun. Push başarısız olursa kullanıcıya söyle.
->
-> Repo: https://github.com/emirtanir/ilk-projem (dal: `main`, herkese açık). Terminalden giriş GitHub CLI ile (`~/.local/bin/gh`, `gh auth login` + `gh auth setup-git`).
->
-> **Site (GitHub Pages):** https://emirtanir.github.io/ilk-projem/ — `main` dalına her push'ta otomatik yayınlanır. Push'tan sonra Pages yayını bitene kadar bekle (`gh api repos/emirtanir/ilk-projem/pages/builds/latest` → `status: built`), sonra siteyi kullanıcının tarayıcısında aç: `open "https://emirtanir.github.io/ilk-projem/?v=<kısa commit>"` (sondaki `?v=` eski sürümün önbellekten gelmesini önler). Kullanıcı ayrıca istemedikçe her push'tan sonra bunu yap.
+> **Durum:** Tasarım prototipi aşaması. Site HTML, CSS ve JavaScript ile çalışıyor. **Altyapı: Supabase** (bkz. "Teknik notlar"). Giriş, üyelik ve şifre yenileme Supabase Auth ile gerçekten çalışıyor; ödeme, sipariş ve ürün veritabanı henüz yok (örnek verilerle demo).
 
 ---
 
 ## 1. İşletme
 
-- **Ad:** Lidya Kuyumculuk – Manavgat merkez, Antalya
-- **Geçmiş:** 1989’dan beri faaliyet gösteren aile işletmesi
-- **Sosyal medya:** Instagram @lidyakuyum (https://www.instagram.com/lidyakuyum/), yaklaşık 35 bin takipçi
-- **Kurucu:** Metin Tanır, 1989
-- **Kuşak:** Üçüncü kuşak
-- **Marka ilişkisi:** 10 yılı aşkın süredir Atasay yetkili satış noktası (Atasay şubesi değil). Favori, Koçak ve diğer markaları da satıyor.
-- **Dernek:** Antalya Kuyumcular Derneği (AJA) üyesi; satılan tüm ürünler garantili
-- **Atölye:** Sitede atölyeden bahsedilmeyecek
-- **Mağaza envanteri:** Elmas, 14 ayar ve 22 ayar altın. Altın ve elması toptan alıyor (uygun fiyat vurgusu)
-- **Hizmetler:** İngilizce / Almanca / Rusça konuşan satış ekibi. Özel randevu ve ücretsiz temizlik/parlatma sitede **yer almayacak**.
-- **Şubeler:** Manavgat ana mağaza + Hotel Alba Resort, Hotel Alba Royal, Hotel Alba Queen. Otellerden mağazaya transfer hizmeti
-- **Sitede kullanılmayacaklar:** Atölyeden bahsetmek, özel randevu, ücretsiz temizlik/parlatma, "aynı sokak" / dükkânın yer değiştirmesi ifadeleri, "Lidya" isminin kökeni
-- **Hedef:** Mağaza satışlarına ek olarak online satış. Önce web sitesi, ileride mobil uygulama.
+- **Ad:** Lidya Kuyum (Lidya Kuyumculuk), Manavgat / Antalya
+- **Kuruluş:** 1989, Metin Tanır tarafından kuruldu. Aile mesleği, bugün üçüncü kuşak.
+- **Şubeler:** Manavgat merkez mağaza + Hotel Alba Resort, Hotel Alba Royal, Hotel Alba Queen. Otellerden mağazaya transfer hizmeti var.
+- **Markalar:** 10 yılı aşkın süredir Atasay yetkili satış noktası (Atasay şubesi değil). Ayrıca Favori, Koçak ve diğer markalar. Sıra: Atasay, Favori, Koçak.
+- **Diğer:** Antalya Kuyumcular Derneği (AJA) üyesi. Tüm ürünler garantili. İngilizce, Almanca, Rusça konuşan satış ekibi.
+- **Sosyal medya:** Instagram'da yaklaşık 35 bin takipçi. Kullanıcı adı: **@lidyakuyum** (https://www.instagram.com/lidyakuyum/)
 
-**İletişim ve konum**
-- **Telefon:** 0532 365 00 40
-- **WhatsApp:** aynı numara – https://wa.me/905323650040
-- **Çalışma saatleri:** Pazartesi – Cumartesi 08.30 – 21.00, Pazar kapalı
-- **Konum (Google Maps):** https://maps.app.goo.gl/f1KgRL3tKb4TAHyH9
-- **Koordinatlar:** 36.7870367, 31.4430691
-- **Açık adres:** Yukarı Hisar, Antalya Cd. No:50, 07600 Manavgat/Antalya
-- Prototipte bu bilgiler `js/iletisim.js` dosyasında tek yerde tutuluyor.
+### Sitede KULLANILMAYACAK ifadeler
+- Atölye / kendi atölyemiz (hiçbir yerde bahsedilmeyecek)
+- "Aynı sokak", dükkanın yer değiştirmesi
+- Özel randevu
+- Ücretsiz temizlik / parlatma
+- "Lidya" isminin kökeni
+- "Bölgenin en büyük", "en ucuz" gibi belgelenemeyen üstünlük iddiaları
+- "40 yıl", "40 yıllık" (yerine "1989'dan beri" / "1989'dan bugüne")
 
-## 2. Ürünler
+## 2. İletişim bilgileri
+
+Tek bir dosyada (`js/iletisim.js`) tutulur.
+
+- **Telefon / WhatsApp:** 0532 365 00 40 (`https://wa.me/905323650040`)
+- **Çalışma saatleri:** Pazartesi–Cumartesi 08.30–21.00, Pazar kapalı
+- **Konum:** https://maps.app.goo.gl/f1KgRL3tKb4TAHyH9 (36.7870367, 31.4430691)
+- **Alan adı:** lidyakuyum.com ve lidyakuyum.com.tr
+- **E-posta:** info@lidyakuyum.com (kurulacak)
+
+## 3. Ürünler ve satış kuralları
 
 **Satılacaklar**
-- 14 ve 22 ayar altın takı, **minimal takı** ağırlıklı
-- Doğal taş (firuze, ametist vb.):
-  - Altın + doğal taş takılar
-  - Sadece doğal taş ürünler (bileklik, kolye vb.), sabit fiyatlı
-- Markalar: Atasay, Favori, Koçak ve diğerleri (satış sırası: Atasay > Favori > Koçak)
+- 14 ve 22 ayar altın takı: minimal, hediyelik, günlük kullanıma uygun
+- Doğal taş: firuze, ametist vb. Hem altın + taş takılar hem de sadece doğal taş ürünler.
+- Kişiye özel ürünler (Kendi Tasarımını Yap)
 
 **Satılmayacaklar**
 - Gümüş
 - Çeyrek, gram, Cumhuriyet altını, bilezik gibi yatırım altınları
 
-**Ürün sayısı:** Çok sayıda ürünle açılacak. Fotoğrafların çoğu hazır.
-
-## 3. Site yapısı (iskelet)
-
-- Ana sayfa
-- **Markalar:** Atasay, Favori, Koçak…
-- **Ana koleksiyonlar (menüde ve ana sayfada en önde):** Minimal, Hediyelik, Günlük Kullanım. Bir ürün birden fazla koleksiyonda olabilir.
-- **Ürün türleri (ürün listesinde filtre):** Kolye, Kolye Ucu, Küpe, Yüzük, Bileklik
-- **Ayar filtresi:** 14 ayar / 22 ayar (aynı modelin iki ayarı varsa ürün sayfasında seçilir)
-- **Doğal Taş koleksiyonu** (taşların kısa hikâyesi ve anlamıyla)
-- **Kendi Tasarımını Yap**
-- **Hakkımızda:** Aile hikâyesi, dükkan fotoğrafları (dukkan-dis.jpg, dukkan-ic.jpg, vitrin.jpg), şubeler, adres, Atasay yetkili satıcı bilgisi
-- İletişim + WhatsApp hattı
-- Yasal sayfalar: Mesafeli satış sözleşmesi, ön bilgilendirme formu, iade/cayma, KVKK aydınlatma metni, çerez politikası, kargo bilgileri
-- **Hesap:** Giriş / Üye Ol, Hesabım (Siparişlerim, Tasarımlarım, Favorilerim, Adreslerim, Hesap Bilgilerim). Ayrıntı: bölüm 6a.
+**Fiyat sınırları** (tek bir ayar dosyasında sabit olarak tutulur)
+- **30.000 TL altı:** online satılır. Ağırlık **15.000 TL altı** ürünlerde.
+- **30.000 TL ve üstü:** online satılmaz, **katalogda** gösterilir. "Sepete Ekle" yerine "WhatsApp'tan Bilgi Al" butonu, fiyat yerine "Fiyat için bize ulaşın", yanında "Mağazamızda inceleyebilirsiniz". Katalog ürünlerini tamamen gizleme ayarı yedekte durur (varsayılan: katalogda göster).
+- Sınır kontrolü fiyat formülüyle hesaplanan fiyat üzerinden otomatik yapılır; altın fiyatı değişince ürün kendiliğinden satılabilir/katalog durumuna geçer.
 
 ## 4. Fiyatlandırma
 
-- Altın ürünlerde fiyat **gram, ayar ve işçilik** üzerinden hesaplanır.
-- **Formülü aile belirleyecek** (henüz gelmedi).
-- Fiyat güncellemesi **otomatik değil, manuel:** Yönetici panelde güncel altın fiyatını girer, tüm altın ürünlerin fiyatı formülle birden yeniden hesaplanır.
-- Bu yüzden her altın ürün için şu alanlar tutulmalı: gram, ayar, işçilik (formüle göre).
-- Doğal taş ürünleri ve markalı ürünlerin bir kısmı sabit fiyatlı olabilir.
-- **Fiyat-performans hissi:** Belirli bir tutarın üzerinde ücretsiz kargo (üst şeritte, ürün kartında, ürün sayfasında ve sepette "ücretsiz kargoya X TL kaldı" olarak gösterilir). Ana sayfada "Uygun Hediyeler" bölümü ve ürün listesinde "… TL altı" fiyat filtresi var. "Avantaj" işaretleri firuze tonda.
+- Altın ürünlerin fiyatı **gram, ayar ve işçilik** üzerinden hesaplanır. **Gerçek formülü aile belirleyecek**; şimdilik yer tutucu formül var: `gram × altın fiyatı × ayar oranı + işçilik`. Formül tek bir dosyada (`js/fiyat.js`) durur.
+- Güncelleme **manuel:** yönetici güncel altın fiyatını girer, tüm altın ürünler yeniden hesaplanır.
+- Online satış maliyeti (ödeme komisyonu + sigortalı kargo) satış başına yaklaşık %3-5; formüle eklenmeli.
+- Doğal taş ürünleri sabit fiyatlı olabilir.
 
-## 5. Kendi Tasarımını Yap
+## 5. Site yapısı
 
-Arayüz **çok basit** olmalı: serbest çizim yok, adım adım seçim. Her seçimde önizleme ve **tahmini** fiyat anında güncellenir.
+**Üst menü:** Sol üstte küçük yatay "LİDYA" yazı logosu. Menü: Kolye, Küpe, Yüzük, Bileklik, Doğal Taş, Hediye Rehberi, Kampanyalar, Kendi Tasarımını Yap, Hakkımızda. Sağda arama, kullanıcı, sepet. Telefonda hamburger menü. Kaydırınca menü sabit kalır ve incelir.
 
-- **Sipariş usulü üretim, tahmini fiyat + kapora:** Ürünler sipariş üzerine üretildiği için sitede tahmini fiyat (≈) gösterilir. Siparişte tahmini fiyatın bir kısmı kapora olarak alınır; kesin fiyat üretimden sonra tartıma göre bildirilir, kalan tutar kargodan önce ödenir. Sepette "Şimdi ödenecek" ve "Kalan" ayrı gösterilir. Kapora oranı `js/fiyat.js` → `SATIS_AYARLARI.tasarimKaporaOrani` (prototipte örnek %30).
+**Ana sayfa (sırasıyla)**
+1. İlk ekran: başlık + slogan, yanında Minimal / Hediyelik / Günlük Kullanım koleksiyon kartları. Bilgisayarda kaydırmadan tek ekranda görünür. **Büyük yuvarlak logo kullanılmaz.**
+2. "15.000 TL altı zarif seçimler" şeridi
+3. Öne Çıkan Ürünler
+4. İnternete Özel Kampanyalar
+5. Hediye Rehberi tanıtımı
+6. Doğal Taş
+7. Kendi Tasarımını Yap tanıtımı
+8. Markalar (Atasay, Favori, Koçak; markalar sadece yazıyla, logo/görsel yok)
+9. "1989'dan Bugüne" kısa hikâye
+10. Instagram bölümü
+11. İletişim + harita
 
-- **İade ve onay kuralları (kişiye özel ürünler):**
-  - **Cayma hakkı yok:** Kişiye özel üretildiği için iade ve değişim kapsamında değil. **Üretim hatası hariç:** üretim hatalarında ücretsiz yeniden üretim yapılır.
-  - **Üretim öncesi ücretsiz iptal:** Üretime başlanana kadar sipariş ücretsiz iptal edilebilir.
-  - **Lazerle resimde üretim öncesi WhatsApp onayı:** Fotoğrafın önizlemesi üretimden önce müşterinin onayına WhatsApp'tan sunulur.
-  - Sitede: tasarım ekranında "Sepete Ekle"nin hemen üstünde iade bilgi kutusu (sadece "Bu ürün size özel üretildiği için iade ve değişim kapsamında değildir."; üretim hatası ve ücretsiz iptal cümleleri kutuda yazmıyor) ve zorunlu onay kutusu ("Yazımı ve seçimlerimi kontrol ettim, kişiye özel ürünlerin iade edilemediğini biliyorum."); işaretlenmeden sepete eklenmez. İsim kolyesinde önizlemenin altında "Yazılacak isim: …" büyük gösterilir. Sepette bu ürünlerde "Kişiye özel · İade edilemez" etiketi var.
+**Ana koleksiyonlar:** Minimal, Hediyelik, Günlük Kullanım. Kolye/küpe/yüzük/bileklik ürün türü olarak filtrede kullanılır.
 
-İlk sürümde üç ürün (dükkanda en çok yapılanlar):
-1. **İsim kolyesi:** isim gir → ayar seç → zincir uzunluğu seç. Yazı stili seçimi yok: her zaman el yazısı ("Modern" ve "Klasik" stil yok)
-2. **Harf kolye:** harf seç → ayar seç (model seçimi yok; Ğ harfi yok)
-3. **Lazerle resim:** fotoğraf yükle → plaka şekli seç → ayar seç. Fotoğraf dükkan tarafından kontrol edilip müşteriye onay verilir.
+**Ürün listesi filtreleri:** tür, koleksiyon, marka, ayar (14/22), fiyat (5.000 / 10.000 / 15.000 / 30.000 TL altı). Varsayılan sıralama: "Önerilen".
 
-- Süre: **1-3 iş günü içinde kargoda** (özel gün ve pazar hariç). Sitede "en geç 3 iş günü" yazılacak; yoğun dönemlerde (bayram, Sevgililer Günü, Anneler Günü, yılbaşı) üstte duyuru şeridi.
+**Diğer sayfalar:** ürün detay, sepet, ödeme akışı, giriş/kayıt, hesabım, hediye rehberi, kampanyalar, kendi tasarımını yap, hakkımızda, yasal sayfalar.
 
-## 6. Sipariş yönetimi
+## 6. Dil ve ambiyans
 
-- Siparişlere bakacak kişiler: Emir, dükkan çalışanları, dükkan müdürü
-- Ayrı kullanıcı hesapları ve yetkiler olan bir yönetim paneli (Supabase üzerinde kendimiz yazacağız; hazır panel yok)
-- Yeni siparişte e-posta / telefon bildirimi
-- Panel **telefondan rahat kullanılmalı** (Emir dönem içinde İstanbul'da)
+- **Hava:** şık, günlük, zarif, rahat. Müşteriyi asla sıkıştırmayan, gerginlikten uzak.
+- **Kullanılmayacak:** "Son 2 ürün!", "Acele et!", geri sayım sayacı, satış baskısı yaratan her şey. İndirim yüzdesi gösterilmez.
+- **Ana slogan:** "Her güne bir parça zarafet."
+- **Hikâye başlığı:** "Zarafet, nesilden nesile."
+- **Hediye sloganı:** "Küçük bir parça, büyük bir anlam."
+- "1989'dan beri" kısa etiketlerde, "1989'dan Bugüne" başlıklarda.
 
-## 6a. Müşteri hesabı
+## 7. Tasarım
 
-- **Giriş, üyelik, şifre yenileme ve çıkış Supabase Auth ile çalışıyor** (`js/supabase.js`). Üyelikte e-posta doğrulaması var. Ad, telefon, iletişim izinleri ve onay tarihleri (KVKK onayı, izin tarihi) Supabase hesabının ek bilgilerinde (user_metadata) tutuluyor. Siparişler hâlâ örnek; adresler, favoriler ve kayıtlı tasarımlar şimdilik tarayıcıda (sonraki adım: Supabase veritabanı). Google ile giriş kapalı (`SUPABASE_AYAR.googleGirisAcik`).
-- **Üye olmadan alışveriş her zaman mümkün.** Sepette "Üye olmadan devam et" her zaman görünür ve en önde; yanında "Giriş Yap" ve "Üye Ol". Sipariş tamamlandı ekranında üye olmayana "Bilgilerinizi kaydedip hesap oluşturun" önerisi çıkar.
-- **Ticari ileti onayı ayrı ve isteğe bağlı:** Üye olurken KVKK aydınlatma metni onayı zorunlu; "Kampanya, çekiliş ve yeniliklerden SMS/e-posta ile haberdar olmak istiyorum" kutusu ayrı, isteğe bağlı ve varsayılan olarak işaretsiz. Hesap Bilgilerim'den SMS ve e-posta izni ayrı ayrı değiştirilebilir.
-- Favoriler: ürün kartı ve ürün detayında kalp ikonu. Kendi Tasarımını Yap'ta "Tasarımımı kaydet" (giriş yoksa giriş sayfasına yönlendirir, girişten sonra tasarım otomatik kaydedilir).
-- Prototip dosyaları: `giris.html`, `hesabim.html`, `odeme.html`, `kvkk.html` (yer tutucu); kodlar `js/giris.js`, `js/hesap.js`, `js/odeme.js`; ortak hesap yardımcıları `js/ortak.js` içinde.
-
-## 7. Kargo
-
-- **Yurt içi:** DHL eCommerce Türkiye (eski MNG Kargo) ile kurumsal, **sigortalı** kıymetli gönderi anlaşması yapılacak
-- Paket üzerinde "altın" ibaresi yok, paketleme kamera kaydıyla, güvenlik bantlı poşet
-- İçerik asla gizlenmeyecek (sigorta geçersiz olur)
-- Doğal taş ürünleri normal kargoyla gidebilir
-- **Yurt dışı:** Şimdilik yok (DHL Express'in mücevher kabul koşulları ayrıca sorulmalı)
-
-## 8. Tasarım
-
-- **Hava:** zarif, feminen, ferah, butik kuyumcu. Büyük markaların sitelerinden daha sıcak ve kişisel.
-- **Ulaşılabilir görünmeli:** Site "pahalı, bana göre değil" hissi vermemeli. Koyu/siyah alanlar yok (duyuru şeridi, butonlar, bildirimler açık pembe/beyaz); arka planlar açık krem, vurgular pudra pembe, küçük etiketler sıcak gül kurusu (#B4705D). Fiyatlar görünür.
 - **Renkler:**
-  - Pudra pembe `#EEBBAD` (logo rengi): butonlar, vurgular
-  - Beyaz / sıcak krem: arka planlar
-  - Koyu antrasit-kahve `#3A2E2A`: yazılar (saf siyah yok)
-  - Altın tonu: sadece küçük detaylarda
-- **Fontlar:** Başlıklarda zarif serif (Cormorant Garamond, Playfair Display veya Libre Caslon), metinlerde sade sans-serif
-- **Ürün fotoğrafları:** aynı arka plan ve ışık; Instagram'daki "üzerinde" fotoğraflar ikinci görsel olarak
-- **Logo dosyaları:** `logo/` klasöründe (yuvarlak logo + pembe/beyaz/koyu yazı, SVG ve PNG). Üst menüde yazı logosunun altında logonun parçası olarak küçük "— SINCE 1989 —" yazısı var (HTML yazı, `.logo-alt`).
-- **Telefon öncelikli** tasarım
-- **Ana sayfa düzeni:** Büyük yuvarlak logo yok. Üst menüde en başta "İnternete Özel Kampanyalar" (gül kurusu #B4705D dolgulu, beyaz yazılı, etiket ikonlu, diğerlerinden farklı görünür; "… TL altı" ürünleri ucuzdan pahalıya listeler), sonra ürün türleri (Kolye, Kolye Ucu, Küpe, Yüzük, Bileklik, Doğal Taş, Kendi Tasarımını Yap, Hakkımızda) + arama, favoriler (kalp, `favoriler.html`), sepet ve hesap ikonları (bu sırayla). İlk ekranda başlığın yanında (telefonda altında) Minimal / Hediyelik / Günlük Kullanım koleksiyon kartları; bilgisayarda kaydırmadan tek ekranda görünür. Altında "Öne Çıkan Ürünler", "Uygun Hediyeler" ve iletişim bölümünün hemen üstünde Instagram bölümü (6 karelik fotoğraf ızgarası, instagram-1…6.jpg). Instagram kullanıcı adı: @lidyakuyum (https://www.instagram.com/lidyakuyum/), `js/iletisim.js` içinde. Instagram yönlendirmelerinde güven için takipçi sayısı (`instagramTakipci`, şimdilik "35 bin") ve "Çekilişler Instagram’da" vurgulanır (ana sayfa, iletişim bölümü, alt kısım).
+  - Pudra pembe `#EEBBAD` (logo rengi): vurgular, ana butonlar; her yerde değil
+  - Sıcak açık zemin (soğuk beyaz da parlak krem de değil)
+  - Koyu kahve-antrasit `#3A2E2A`: yazılar (saf siyah yok)
+  - Altın rengi neredeyse hiç kullanılmaz; site pahalı/lüks görünmemeli, ulaşılabilir ama kaliteli görünmeli
+  - **İkinci renk henüz seçilmedi.** Öneriler: adaçayı `#8A9A82` (önerilen), kiremit `#C2775C`, mürdüm `#6E3B4E`
+- **Fontlar:** başlıklarda zarif serif, metinlerde sade sans-serif. İsim kolyesi önizlemesinde el yazısı fontlar.
+- **Animasyonlar:** kısa ve sakin (0.3–0.6 sn): kaydırınca hafif belirme, kartlarda hafif yükselme, butonlarda yumuşak geçiş. "Hareketi azalt" ayarı açıksa kapanır.
+- **Telefon öncelikli** tasarım.
+- **Logo dosyaları:** `logo/` (yuvarlak logo, yazı logosu pembe/beyaz/koyu; SVG ve PNG)
+- **Görseller:** `foto/`. Şu anki görseller temsili çizim/örnek; gerçek sitede ürün sayfalarında **sadece kendi ürün fotoğraflarımız** kullanılır. Marka görselleri sadece markanın yazılı izniyle. İnternetten bulunan fotoğraf ürün sayfasına konmaz.
 
-## 9. Alan adı
+## 8. Kendi Tasarımını Yap
 
-- `lidyakuyum.com` ve `lidyakuyum.com.tr` (işletme adına kayıtlı, otomatik yenileme açık)
-- `info@lidyakuyum.com` gibi bir e-posta
+Basit, adım adım seçim; serbest çizim yok. Her seçimde önizleme ve **tahmini** fiyat anında güncellenir.
 
-## 10. Kısıtlar
+1. **İsim kolyesi:** isim → ayar → zincir uzunluğu. **Yazı stili seçimi yok:** her zaman el yazısı ("Modern" ve "Klasik" stil yok, üretilemiyor). Varsayılan örnek isim **"Çağla"**. Zincir uçları ismin ilk ve son harfine bağlı görünür. Önizlemenin altında "Yazılacak isim: …" büyük ve net gösterilir.
+2. **Harf kolye:** harf → ayar. **Model seçimi yok; Ğ harfi yok.**
+3. **Lazerle resim:** fotoğraf yükle → plaka şekli → ayar. Üretimden önce WhatsApp'tan müşteriye önizleme onayı alınır.
 
-- **Masraf olabildiğince düşük.** Zorunlu olmayan aylık ücretlerden kaçın.
-- Ödeme şirketi komisyonu kaçınılmaz, satış başına ödenir.
-- Bakımı Emir yapacak, yani güncellemesi ve yönetimi kolay olmalı.
+- **Sipariş usulü üretim, tahmini fiyat + kapora:** Sitede tahmini fiyat (≈) gösterilir. Siparişte tahmini fiyatın bir kısmı kapora olarak alınır (prototipte örnek %30); kesin fiyat üretimden sonra tartıma göre bildirilir, kalan tutar kargodan önce ödenir. Sepette "Şimdi ödenecek" ve "Kalan" ayrı gösterilir.
+- Teslim: **en geç 3 iş günü içinde kargoda** (pazar ve özel günler hariç). Yoğun dönemlerde üstte duyuru şeridi.
+- Sepete eklemeden önce bilgi: "Bu ürün size özel üretildiği için iade ve değişim kapsamında değildir."
+- Zorunlu onay kutusu: "Yazımı ve seçimlerimi kontrol ettim, kişiye özel ürünlerde cayma hakkı olmadığını biliyorum."
+- Sepette etiket: "Kişiye özel · İade edilemez"
+- "Tasarımımı kaydet" butonu (giriş gerekir)
 
-## 11. Altyapı: Supabase
+## 9. Hediyelik
 
-- **Site:** Statik HTML/CSS/JS (şu anki prototip temel alınır), GitHub Pages'te yayında. Alan adı (`lidyakuyum.com`) buraya bağlanacak.
-- **Supabase (bedava katman, bölge: Frankfurt):**
-  - **Auth:** E-posta + şifre ve Google ile giriş. Şifreler Supabase'de güvenli (hash) saklanır.
-  - **Veritabanı (Postgres):** ürünler, müşteri profilleri, adresler, favoriler, kayıtlı tasarımlar, siparişler, ayarlar (altın gram fiyatı, satış ayarları). Her tabloda Row Level Security: müşteri sadece kendi verisini görür; yönetici rolleri (Emir, dükkan müdürü, çalışanlar) siparişleri görür.
-  - **Storage:** ürün fotoğrafları ve Lazerle Resim için yüklenen müşteri fotoğrafları (fotoğraflar gizli klasörde).
-  - **Edge Functions:** ödeme şirketi bildirimi (ödeme alındı), yeni sipariş e-posta/telefon bildirimi gibi sunucu tarafı işler.
-- **Ödeme:** iyzico veya PayTR. Kart bilgisi asla bizde tutulmaz.
-- **Yönetim paneli:** Hazır panel yok; telefondan rahat kullanılan basit bir panel sayfası yazılacak (siparişler, durum güncelleme, altın fiyatı girişi, ürün ekleme).
-- **Anahtarlar:** Supabase proje adresi ve `anon` (public) anahtarı sitede durabilir. `service_role` anahtarı, ödeme şirketi gizli anahtarları **asla** repoya ve site koduna girmez; sadece Supabase Edge Function gizli ayarlarında durur.
-- **Supabase panel ayarları (Authentication → URL Configuration):** Site URL `https://emirtanir.github.io/ilk-projem/`, Redirect URLs `https://emirtanir.github.io/ilk-projem/**`. Doğrulama ve şifre yenileme bağlantıları buraya döner.
-- **E-posta gönderimi:** Supabase'in hazır e-posta servisi sadece proje ekibinin adreslerine ve saatte birkaç e-posta gönderir; müşterilere açılmadan önce bedava katmanı olan bir SMTP servisi (ör. Brevo, Resend) bağlanmalı ve e-posta şablonları Türkçeleştirilmeli.
-- **Kütüphane:** supabase-js 2.117.2, jsDelivr'den sabit sürümle yükleniyor.
-- **Bedava katman sınırları:** Depolama ve kullanım sınırlı, otomatik yedek yok, uzun süre kullanılmayan proje durdurulabilir. Koşullar değişebilir; kurulumda güncel sınırlar kontrol edilecek.
+- **Hediye Rehberi** sayfası: Kime (Sevgiliye, Anneye, Arkadaşa, Kendine), Hangi gün (Doğum günü, Yıldönümü, Sevgililer Günü, Anneler Günü, Mezuniyet, Yeni doğan), Bütçe (5.000 / 10.000 / 15.000 / 30.000 altı). Seçime göre anlık filtre. Katalog ürünleri burada çıkmaz.
+- **Hediye paketi ücretsiz.** Hediye notu alanı (en fazla 200 karakter), not karta yazılıp pakete konur.
+- Hediye paketinde fiyat yazılı belge olmaz; fatura sipariş verene e-postayla gider.
+- Ödemede "Farklı bir adrese hediye olarak gönder" seçeneği.
+
+## 10. Kampanyalar
+
+- Bölüm adı: **"İnternete Özel Kampanyalar"**
+- Markalı ürünler (Atasay, Favori, Koçak) kampanyaya girmez.
+- Üstü çizili eski fiyat + yeni fiyat; yüzde gösterilmez. Varsa "Kampanya [tarih] tarihine kadar".
+- Gerçek sitede indirimden önceki fiyat **son 30 günün en düşük fiyatı** olmalı (Ticari Reklam Yönetmeliği); fiyat geçmişi tutulacak.
+
+## 11. Hesap
+
+- **Giriş, üyelik (e-posta doğrulamalı), şifre yenileme ve çıkış Supabase Auth ile çalışıyor.** Ad, telefon, iletişim izinleri ve onay tarihleri Supabase hesabında tutuluyor. Siparişler hâlâ örnek; adresler, favoriler ve kayıtlı tasarımlar şimdilik tarayıcıda (sonraki adım: Supabase veritabanı). Google ile giriş henüz kapalı.
+- **Üye olmadan alışveriş her zaman mümkün.** Sipariş sonrası hesap oluşturma önerisi.
+- Hesabım: Siparişlerim, Tasarımlarım, Favorilerim, Adreslerim, Hesap Bilgilerim.
+- Kayıtta KVKK aydınlatma metni onayı (zorunlu) ve ticari ileti izni (ayrı, isteğe bağlı, **varsayılan işaretsiz**).
+
+## 12. Kargo, iade, ödeme
+
+- **Kargo:** DHL eCommerce Türkiye (eski MNG) ile kurumsal **sigortalı** gönderi (anlaşma yapılacak). Paket üzerinde "altın" yazmaz; paketleme kamera kaydıyla; içerik asla gizlenmez. Yurt dışı şimdilik yok.
+- **İade (taslak, avukata okutulacak):**
+  - Hazır ürünlerde 14 gün cayma hakkı; ürün kullanılmamış, etiketi/mührü bozulmamış olmalı.
+  - Kişiye özel ürünlerde cayma hakkı yok (ayıplı mal hakları saklı).
+  - İade kargosu müşteriden alınamaz (1 Ocak 2026 düzenlemesi); iade için DHL eCommerce kodu verilir.
+  - Gönderim öncesi ve iade gelişinde hassas tartı, damga fotoğrafı ve video kaydı. Hasar/eksik gram halinde değer kaybı düşülür.
+- **Ödeme:** iyzico veya PayTR (karar verilmedi). Kart bilgisi siteye gelmez.
+
+## 13. Teknik ve çalışma kuralları
+
+- **Altyapı:** **Supabase** (giriş/üyelik, veritabanı, dosya depolama, sunucu işleri) + statik site (GitHub Pages) + iyzico/PayTR. Sebep: aylık ücret olmasın. Ayrıntılar: "Teknik notlar".
+- Prototip: HTML/CSS/JS, dosyalar düzenli, veriler (ürünler, iletişim, fiyat) ayrı dosyalarda.
+- **GitHub kuralı:** Her istenen değişiklik bittikten sonra, özet vermeden önce değişiklikleri Türkçe ve açıklayıcı bir commit mesajıyla commit'le ve GitHub'a push et. Repo **herkese açık** (GitHub Pages için). Şifre, API anahtarı, .env gibi gizli bilgiler asla commit'lenmez; .gitignore'da olur. Push başarısız olursa kullanıcıya söyle.
+- **Push'tan sonra siteyi aç:** Pages yayını bitene kadar bekle, sonra siteyi kullanıcının tarayıcısında aç (komutlar "Teknik notlar"da). Kullanıcı ayrıca istemedikçe her push'tan sonra yapılır.
+- Her değişiklikten sonra bu dosyayı da güncel tut.
 
 ---
 
-## Açık Kararlar
+## Açık sorular (aileden cevap bekleniyor)
 
-- [x] **Altyapı:** **Supabase** + statik site + iyzico/PayTR (ayrıntı: bölüm 11). WooCommerce, ikas, Shopify seçilmedi; sebep: aylık ücret olmasın.
-- [x] Hosting: site GitHub Pages (ileride Cloudflare Pages da olabilir), veri Supabase. Aylık ücret yok.
-- [ ] **KVKK – yurt dışına aktarım:** Supabase sunucusu Avrupa'da (Frankfurt). Standart sözleşme + KVKK Kurumu'na bildirim gerekiyor; avukat/muhasebeciyle teyit edilecek. Aydınlatma metninde belirtilecek.
-- [ ] **İYS kaydı:** Kampanya/çekiliş SMS ve e-posta onayları İleti Yönetim Sistemi'ne kaydedilmeli. Kim yapacak?
-- [ ] **VERBİS:** Muafiyet teyit edilecek.
-- [ ] **E-posta (SMTP) servisi:** Müşterilere doğrulama/şifre e-postası gidebilmesi için bağlanacak; gönderen adres info@lidyakuyum.com olmalı.
-- [ ] **Yedekleme:** Supabase bedava katmanında otomatik yedek yok; düzenli yedeği kendimiz alacağız (yöntem belirlenecek).
-- [ ] **Ödeme şirketi:** iyzico mu PayTR mı? (Aileden Beklenen Cevaplar 4)
-- [ ] **Ücretsiz kargo sınırı, kargo ücreti ve "Uygun Hediyeler" fiyat aralıkları:** prototipte örnek değerler (2.000 TL / 150 TL / 1.000-5.000-7.500 TL). Gerçek fiyatlar girilirken, siteyi yayına almadan önce birlikte güncellenecek (`js/fiyat.js` → `SATIS_AYARLARI`).
-- [ ] **Kendi Tasarımını Yap kapora oranı** ve kalan tutarın ne zaman / nasıl alınacağı (prototipte örnek: %30, kalan kargodan önce). Ödeme altyapısı seçilirken netleşmeli.
+1. Sitede hangi ayarlar satılacak: 14, 18, 22? Elmas online'a girecek mi?
+2. Gerçek fiyat formülü; işçilik ürüne mi kategoriye mi göre; online maliyet formüle nasıl eklenecek
+3. Taksit olacak mı, komisyonu kim öder
+4. Kişiye özel ürünlerin fiyat hesabı; harf kolyeler stokta mı, sipariş üzerine mi
+5. Ödeme şirketi (iyzico / PayTR), sanal POS durumu
+6. Ürün bilgileri nerede (Excel, kuyumcu programı)
+7. "2 yıl şans hakkı" tam olarak ne
+8. Dükkandaki iade/değişim kuralları
+9. Ticari unvan, vergi no, MERSİS
+10. Bayilik sözleşmelerinde online satış, görsel ve fiyat şartları; Atasay'dan görsel izni
+11. Instagram çekilişlerinde Milli Piyango izni
+12. e-Arşiv fatura programı (mali müşavir)
+13. DHL eCommerce görüşmesini kim yapacak; siparişleri günlük kim takip edecek
+14. Sitenin ikinci rengi
 
-## Aileden Beklenen Cevaplar
+## Yayın öncesi kontrol listesi
 
-1. Ürün bilgileri (ad, gram, ayar, işçilik) şu an nerede? Excel, kuyumcu programı, hiçbir yer?
-2. Fiyat formülü tam olarak ne? İşçilik ürüne göre mi, kategoriye göre mi?
-3. Kişiye özel ürünlerin fiyatı nasıl belirleniyor? (harf sayısı, gram…)
-4. Sanal POS anlaşması var mı? iyzico / PayTR gibi bir şirketle çalışıldı mı?
-5. Ticari unvan ve vergi bilgileri
-6. Bayilik sözleşmelerinde online satış, logo ve fotoğraf kullanımı şartları
-7. Dükkandaki iade/değişim kuralları
-8. DHL eCommerce görüşmesini kim yapacak?
-9. Aylık bütçe sınırı ve hedef açılış tarihi
-10. Logonun orijinal dosyası var mı?
+- [ ] Hosting + SSL
+- [ ] Altyapı kurulumu (ürünler, hesap, sepet, sipariş paneli, çok kullanıcılı yetki, telefon bildirimi)
+- [ ] Ödeme şirketi başvurusu ve entegrasyonu (3D Secure, taksit)
+- [ ] e-Arşiv fatura entegrasyonu
+- [ ] DHL eCommerce sigortalı gönderi anlaşması + entegrasyon
+- [ ] Sipariş/kargo e-postaları, info@lidyakuyum.com
+- [ ] Yasal metinler: mesafeli satış sözleşmesi, ön bilgilendirme formu, iade ve cayma, KVKK aydınlatma, açık rıza, çerez politikası, kargo bilgileri (avukata okutulacak)
+- [ ] Çerez onay penceresi
+- [ ] ETBİS kaydı, İYS kaydı, VERBİS durumu
+- [ ] Yedekleme, güvenlik eklentisi, yönetici paneline iki adımlı doğrulama, reCAPTCHA
+- [ ] Gerçek ürün fotoğrafları
+- [ ] Google Analytics, Meta Pixel, Search Console, Google İşletme Profili
 
 ## İleride
 
 - Mobil uygulama
-- Marka tescili: "Lidya / Lidya Kuyumculuk" + logo, TÜRKPATENT, 14. ve 35. sınıflar (önce benzer marka araştırması)
-- Tasarlayıcıya yeni ürün türleri (yüzük, bileklik, harf küpe)
+- Sitenin İngilizce, Almanca, Rusça versiyonu (otel müşterileri için)
+- Hediyelik alt koleksiyonları (Sevgiliye, Anneye vb.) genişletme
+- Tasarlayıcıya yeni ürünler (yüzük, bileklik, harf küpe)
+- Marka tescili: "Lidya / Lidya Kuyum" + logo, TÜRKPATENT, 14. ve 35. sınıflar (önce benzer marka araştırması)
 - TikTok
+
+---
+
+## Teknik notlar
+
+Eski özetten korunan teknik bilgiler. Yukarıdaki kararlarla çelişirse yukarısı geçerlidir.
+
+### GitHub ve yayın
+- **Repo:** https://github.com/emirtanir/ilk-projem (dal: `main`, herkese açık).
+- **Terminalden giriş:** GitHub CLI `~/.local/bin/gh` (v2.102.0, Homebrew yok). `gh auth login` + `gh auth setup-git` yapıldı.
+- **Site (GitHub Pages):** https://emirtanir.github.io/ilk-projem/ — `main` dalına her push'ta otomatik yayınlanır. Kökte `.nojekyll` var (dosyalar işlenmeden yayınlanır).
+- **Push sonrası:** `gh api repos/emirtanir/ilk-projem/pages/builds/latest` → `status: built` ve commit eşleşene kadar bekle, sonra `open "https://emirtanir.github.io/ilk-projem/?v=<kısa commit>"` (sondaki `?v=` eski sürümün önbellekten gelmesini önler).
+- `.gitignore`: `.DS_Store`, `.env`, `.env.*`, `*.pem`, `*.key`, `secrets/`, `gizli/`, `.vscode/`, `.idea/`, `node_modules/`.
+
+### Supabase
+- **Proje:** `https://ivmmylsmpybaxyqqjbbx.supabase.co`, bölge Frankfurt, bedava katman. Bağlantı `js/supabase.js` içinde (proje adresi + publishable anahtar; bunlar açık bilgidir).
+- **Anahtar kuralı:** Secret / `service_role` anahtarı ve ödeme şirketi gizli anahtarları **asla** repoya ve site koduna girmez; sadece Supabase Edge Function gizli ayarlarında durur.
+- **Planlanan kullanım:** Auth (e-posta + şifre, ileride Google), Postgres (ürünler, profiller, adresler, favoriler, tasarımlar, siparişler, ayarlar; her tabloda Row Level Security: müşteri sadece kendi verisini, yöneticiler siparişleri görür), Storage (ürün fotoğrafları, lazer için müşteri fotoğrafları gizli klasörde), Edge Functions (ödeme bildirimi, yeni sipariş bildirimi). Yönetim paneli hazır değil, telefondan rahat kullanılan basit bir sayfa yazılacak.
+- **Panel ayarı (Authentication → URL Configuration):** Site URL `https://emirtanir.github.io/ilk-projem/`, Redirect URLs `https://emirtanir.github.io/ilk-projem/**`. Doğrulama ve şifre yenileme bağlantıları buraya döner.
+- **E-posta:** Supabase'in hazır e-posta servisi sadece proje ekibinin adreslerine ve saatte birkaç e-posta gönderir. Müşterilere açılmadan önce bedava katmanlı bir SMTP servisi (önerilen Resend, alternatif Brevo) bağlanacak; gönderen "Lidya Kuyumculuk <info@lidyakuyum.com>", alan adına DNS kayıtları (SPF/DKIM) eklenecek, e-posta şablonları Türkçeleştirilecek.
+- **Kütüphane:** supabase-js 2.117.2, jsDelivr'den sabit sürümle (`dist/umd/supabase.js`) bütün sayfalarda `js/ortak.js`'ten önce yükleniyor.
+- **Oturum:** Kullanıcının özet bilgisi tarayıcıda `lidya-hesap` anahtarında tutulur ve her sayfada Supabase oturumuyla eşitlenir (`oturumHazir`). Ad, telefon, `izinSms`, `izinEposta`, `kvkkOnayTarihi`, `izinTarihi` Supabase `user_metadata` içinde. Google girişi `SUPABASE_AYAR.googleGirisAcik` ile açılır.
+- **KVKK:** Sunucu yurt dışında (Frankfurt) olduğu için yurt dışına aktarım yükümlülükleri (standart sözleşme + KVKK Kurumu'na bildirim) avukat/muhasebeciyle teyit edilecek. Bedava katmanda otomatik yedek yok; yedekleme yöntemi belirlenecek.
+
+### Dosya yapısı
+- **Sayfalar:** `index.html`, `urunler.html` (liste; `?kategori=`, `?koleksiyon=`, `?marka=`, `?fiyat=`, `?ara=`), `urun.html?id=`, `tasarla.html`, `hakkimizda.html`, `sepet.html`, `odeme.html`, `giris.html` (`?sekme=uye`, `?donus=`), `hesabim.html` (`#siparisler`, `#tasarimlar`, `#favoriler`, `#adresler`, `#bilgiler`), `favoriler.html`, `kvkk.html` (yer tutucu).
+- **Stil:** `css/stil.css` (tüm stiller; renk/font değişkenleri en üstte `:root`).
+- **Kod:**
+  - `js/iletisim.js` → `ILETISIM`: telefon, WhatsApp, e-posta, `adres` ("Yukarı Hisar, Antalya Cd. No:50, 07600 Manavgat/Antalya"), `instagramKullanici` ('lidyakuyum'), `instagramTakipci` ('35 bin'), çalışma saatleri, konum.
+  - `js/fiyat.js` → fiyat formülü (`altinFiyatHesapla`), ayar oranları, `TASARIM_DEGERLERI` (tasarım ürünlerinin gram/işçilik örnekleri), `SATIS_AYARLARI` (örnek değerler: kargo, fiyat sınırları, `tasarimKaporaOrani`), `kaporaHesapla`, `sepetToplamlari`.
+  - `js/urunler.js` → `URUNLER` (örnek ürünler; alanlar: id, ad, kategori, marka, koleksiyonlar, secenekler{ayar: gram, iscilik} veya sabitFiyat, tas, ton, etiket, aciklama), `KOLEKSIYONLAR`, `KATEGORILER`, `MARKALAR`, `ONE_CIKANLAR`, `TASLAR`.
+  - `js/ortak.js` → üst menü, alt kısım, iletişim bölümü, ürün kartı, sepet, favoriler, kayıtlı tasarımlar, hesap/oturum yardımcıları, bildirim.
+  - `js/supabase.js` → Supabase bağlantısı ve Türkçe hata mesajları.
+  - `js/liste.js`, `js/detay.js`, `js/sepet.js`, `js/odeme.js`, `js/giris.js`, `js/hesap.js`, `js/tasarla.js`, `js/onizleme.js` (tasarım önizleme SVG'leri, `tasarimKalemi`).
+- **Tarayıcı hafızası anahtarları:** `lidya-sepet`, `lidya-hesap`, `lidya-favoriler`, `lidya-tasarimlar`, `lidya-adresler`, `lidya-bekleyen-tasarim`.
+- **Görsel adları (`foto/` klasörüne konunca kendiliğinden görünür):** `koleksiyon-minimal.jpg`, `koleksiyon-hediyelik.jpg`, `koleksiyon-gunluk.jpg`, `instagram-1.jpg` … `instagram-6.jpg`; Hakkımızda: `dukkan-dis.jpg`, `dukkan-ic.jpg`, `vitrin.jpg` (yer tutucu `<figure>` elle `<img>` ile değiştirilir).
+- **Logo:** Üst menüde yazı logosunun altında HTML yazı olarak "— SINCE 1989 —" (`.logo-alt`, `lang="en"`, düz hizalı rakamlar).
+- **Prototipin çalışma şekli:** `index.html` çift tıkla açılabilir; sunucu gerekmez. Animasyonlar `prefers-reduced-motion` açıksa kapanır.
