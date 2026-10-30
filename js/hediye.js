@@ -7,6 +7,7 @@ const secim = {
   gun: hParametre.get('gun') || '',
   butce: hParametre.get('butce') || '',
 };
+let sira = hParametre.get('sirala') || '';   // boş = Önerilen
 
 const HEDIYE_GRUPLARI = [
   { anahtar: 'kime', baslik: 'Kime?', secenekler: Object.entries(KIME) },
@@ -36,7 +37,7 @@ function hediyeyeUyuyor(u) {
 }
 
 function hediyeleriCiz() {
-  const sonuc = URUNLER.filter(hediyeyeUyuyor);
+  const sonuc = urunleriSirala(URUNLER.filter(hediyeyeUyuyor), sira);
   document.getElementById('hediye-izgara').innerHTML = sonuc.length
     ? sonuc.map(urunKartiHTML).join('')
     : '<p class="bos-sonuc">Bu seçimlere uygun hediye bulamadık.<br>Bir seçimi değiştirmeyi ya da Kendi Tasarımını Yap’ı deneyin.</p>';
@@ -47,6 +48,7 @@ function hediyeleriCiz() {
 function adresiYaz() {
   const p = new URLSearchParams();
   Object.entries(secim).forEach(([k, v]) => v && p.set(k, v));
+  if (sira) p.set('sirala', sira);
   try { history.replaceState(null, '', location.pathname + (p.toString() ? '?' + p : '')); } catch (e) { /* dosyadan açılınca izin olmayabilir */ }
 }
 
@@ -62,6 +64,14 @@ document.getElementById('hediye-secimler').addEventListener('click', e => {
 document.getElementById('hediye-temizle').addEventListener('click', () => {
   Object.keys(secim).forEach(k => (secim[k] = ''));
   secimleriCiz();
+  hediyeleriCiz();
+  adresiYaz();
+});
+
+// Sırala (seçim adres çubuğunda tutulur)
+document.getElementById('sirala-arac').outerHTML = siralaAraciHTML(sira);
+siralaAraciBagla(document.getElementById('hediye-araclar'), yeni => {
+  sira = yeni;
   hediyeleriCiz();
   adresiYaz();
 });

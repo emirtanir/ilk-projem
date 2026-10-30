@@ -98,6 +98,7 @@ function secimiGuncelle() {
 }
 
 detayCiz();
+goruntulenmeArtir(urun.id); // "En popüler" sıralaması için (gerçek sitede sunucudaki sayaç)
 secimiGuncelle();
 
 document.getElementById('detay').addEventListener('click', e => {

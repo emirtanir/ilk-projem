@@ -20,21 +20,26 @@
     </div>
 
     <div class="liste-duzen">
-      <div class="liste-ust">
-        <span class="sonuc" id="sonuc-sayisi"></span>
-        <div class="liste-araclar">
-          <label class="sirala"><span>Sırala</span>
-            <select id="sirala">
-              <option value="">Önerilen</option>
-              <option value="artan">Fiyat: düşükten yükseğe</option>
-              <option value="azalan">Fiyat: yüksekten düşüğe</option>
-              <option value="yeni">En yeniler</option>
-            </select>
-          </label>
-          <button class="dugme dugme-cizgi filtre-dugme" id="filtre-dugme">Filtrele</button>
+      <!-- Filtrele ve Sırala: bilgisayarda listenin üstünde yan yana, telefonda iki eşit buton + alttan açılan panel -->
+      <div class="liste-araclar" id="liste-araclar">
+        <div class="arac">
+          <button class="arac-dugme" type="button" data-panel="filtre-panel" aria-expanded="false" aria-haspopup="true">
+            <span class="arac-ikon" id="filtre-ikon"></span><span>Filtrele<small id="filtre-ozet">Tümü</small></span>
+          </button>
+          <div class="alt-panel alt-panel-genis" id="filtre-panel" hidden>
+            <div class="alt-panel-ic" role="dialog" aria-label="Filtrele">
+              <div class="alt-panel-bas"><strong>Filtrele</strong><button type="button" class="panel-kapat" data-panel-kapat aria-label="Kapat">×</button></div>
+              <div class="filtreler" id="filtreler"></div>
+              <div class="alt-panel-alt">
+                <button type="button" class="filtre-temizle" data-temizle>Filtreleri temizle</button>
+                <button type="button" class="dugme" data-panel-kapat id="sonuclari-goster">Sonuçları göster</button>
+              </div>
+            </div>
+          </div>
         </div>
+        <div id="sirala-arac"></div>
       </div>
-      <aside class="filtreler" id="filtreler"></aside>
+      <p class="sonuc" id="sonuc-sayisi"></p>
       <div class="urun-izgara" id="urun-izgara"></div>
     </div>
   </main>

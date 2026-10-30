@@ -78,6 +78,12 @@ Tek bir dosyada (`js/iletisim.js`) tutulur.
 
 **Ürün listesi filtreleri:** tür, koleksiyon, marka, ayar (14/22), fiyat (5.000 / 10.000 / 15.000 / 30.000 TL altı). Varsayılan sıralama: "Önerilen".
 
+**Sıralama (bütün ürün listelerinde: kategori, koleksiyon, kampanyalar, Hediye Rehberi):** Önerilen (varsayılan), En popüler, Fiyat: Düşükten yükseğe, Fiyat: Yüksekten düşüğe, En yeniler.
+- **"En popüler"** gerçek sitede ürün görüntülenme sayısına göre olacak (en çok açılan ürün en üstte); altyapıda görüntülenme sayacı (eklenti veya analitik verisi) kurulacak.
+- Fiyat sıralamaları formülle hesaplanan güncel fiyata göre; katalog ürünleri (fiyatı görünmediği için) fiyat sıralamalarında en sonda.
+- Seçilen sıralama filtrelerle birlikte çalışır ve adres çubuğunda tutulur.
+- Bilgisayarda "Filtrele" ve "Sırala" listenin üstünde yan yana; telefonda iki eşit buton, basınca alttan panel açılır.
+
 **Diğer sayfalar:** ürün detay, sepet, ödeme akışı, giriş/kayıt, hesabım, hediye rehberi, kampanyalar, kendi tasarımını yap, hakkımızda, yasal sayfalar.
 
 ## 6. Dil ve ambiyans
@@ -236,11 +242,12 @@ Eski özetten korunan teknik bilgiler. Yukarıdaki kararlarla çelişirse yukar�
   - `js/liste.js`, `js/detay.js`, `js/sepet.js`, `js/odeme.js`, `js/giris.js`, `js/hesap.js`, `js/tasarla.js`, `js/onizleme.js` (tasarım önizleme SVG'leri, `tasarimKalemi`).
 - **Satış ayarları (`js/fiyat.js` → `SATIS_AYARLARI`):** `onlineSatisSiniri` (30000), `zarifSecimSiniri` (15000), `fiyatFiltreleri` ([5000, 10000, 15000, 30000]), `katalogUrunleriniGizle` (false), `ucretsizKargoSiniri` / `kargoUcreti` (örnek), `tasarimKaporaOrani` (örnek). Fonksiyonlar: `urunNormalFiyati`, `urunFiyati` (kampanya dahil), `kampanyadaMi` (markalılar hariç), `ayarSatilabilirMi`, `katalogMu`, `gorunurUrunler`.
 - **Ürün alanları (ek):** `kod` (LDY-1001…), `kime`, `gun` (Hediye Rehberi), `kampanya: { oran, bitis }`. Seçenek listeleri `KIME`, `GUNLER` (`js/urunler.js`). Örnek veride 3 katalog ürünü var (LDY-1019…1021). "Kolye Ucu" kategorisi menüde yok, ürün türü filtresinde duruyor.
-- **Sayfa adresleri (ek):** `hediye.html` (`?kime=`, `?gun=`, `?butce=`; `js/hediye.js`), `urunler.html?kampanya=1` (İnternete Özel Kampanyalar), `urunler.html?sirala=artan|azalan|yeni` (boş = Önerilen).
+- **Sayfa adresleri (ek):** `hediye.html` (`?kime=`, `?gun=`, `?butce=`; `js/hediye.js`), `urunler.html?kampanya=1` (İnternete Özel Kampanyalar), `urunler.html?sirala=populer|artan|azalan|yeni` (boş = Önerilen).
 - **Hediye paketi:** `hediyeSecenekHTML` / `hediyeDurumu` (`js/ortak.js`); sepet kaleminde `hediye: { paket, not }`. Ödemede "Farklı bir adrese hediye olarak gönder" alıcı alanları (`js/odeme.js`).
 - **Katalog ürünü:** ürün sayfasında "Fiyat için bize ulaşın", "Mağazamızda inceleyebilirsiniz" ve `whatsappBilgiLinki` (mesaj ürün adı, ayar ve koduyla dolar).
+- **Sıralama ve popülerlik (`js/ortak.js`):** `SIRALAMALAR`, `urunleriSirala(liste, sira)`, `siralaAraciHTML` / `siralaAraciBagla` (Sırala butonu + paneli), `panelAcKapat` (telefonda alttan açılan, bilgisayarda açılır kutu panel). `goruntulenmeArtir(urunId)` ürün sayfası açılınca çağrılır; prototipte sadece tarayıcıda (`lidya-goruntulenme`) artırır, gerçek sitede içi sunucuya (Supabase) istek atacak şekilde değiştirilecek. `goruntulenmeSayisi(urun)` = ürün verisindeki `goruntulenme` + tarayıcıdaki artış. Ürün verisinde `goruntulenme` (başlangıç sayısı) ve `eklenmeTarihi` ('YYYY-AA-GG') alanları var. Adres parametresi: `?sirala=populer|artan|azalan|yeni` (boş = Önerilen).
 - **Üst menü:** `#ust` `display: contents` (menü sayfa boyunca sabit kalsın diye); kaydırınca `.ust.ince` ile incelir.
-- **Tarayıcı hafızası anahtarları:** `lidya-sepet`, `lidya-hesap`, `lidya-favoriler`, `lidya-tasarimlar`, `lidya-adresler`, `lidya-bekleyen-tasarim`.
+- **Tarayıcı hafızası anahtarları:** `lidya-sepet`, `lidya-hesap`, `lidya-favoriler`, `lidya-tasarimlar`, `lidya-adresler`, `lidya-bekleyen-tasarim`, `lidya-goruntulenme`.
 - **Görsel adları (`foto/` klasörüne konunca kendiliğinden görünür):** `koleksiyon-minimal.jpg`, `koleksiyon-hediyelik.jpg`, `koleksiyon-gunluk.jpg`, `instagram-1.jpg` … `instagram-6.jpg`; Hakkımızda: `dukkan-dis.jpg`, `dukkan-ic.jpg`, `vitrin.jpg` (yer tutucu `<figure>` elle `<img>` ile değiştirilir).
 - **Logo:** Üst menüde yazı logosunun altında HTML yazı olarak "— SINCE 1989 —" (`.logo-alt`, `lang="en"`, düz hizalı rakamlar).
 - **Prototipin çalışma şekli:** `index.html` çift tıkla açılabilir; sunucu gerekmez. Animasyonlar `prefers-reduced-motion` açıksa kapanır.

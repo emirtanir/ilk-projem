@@ -55,6 +55,98 @@ function whatsappBilgiLinki(urun, ayar) {
   return `${ILETISIM.whatsappLink}?text=${encodeURIComponent(mesaj)}`;
 }
 
+/* ---------- Görüntülenme sayısı ("En popüler" sıralaması) ---------- */
+// PROTOTİP: Görüntülenme sayısı sadece bu tarayıcıda (localStorage) artırılır.
+// Gerçek sitede bu fonksiyonun içi sunucuya istek atacak şekilde değiştirilecek
+// (ör. Supabase'de ürünün sayacını +1 yapan bir çağrı); sayfalar aynı fonksiyonu çağırmaya devam eder.
+function goruntulenmeArtir(urunId) {
+  const sayilar = hafizaGetir('lidya-goruntulenme', {});
+  sayilar[urunId] = (sayilar[urunId] || 0) + 1;
+  hafizaKaydet('lidya-goruntulenme', sayilar);
+}
+// Ürünün toplam görüntülenmesi: veri dosyasındaki başlangıç değeri + bu tarayıcıdaki artışlar
+function goruntulenmeSayisi(urun) {
+  return (urun.goruntulenme || 0) + (hafizaGetir('lidya-goruntulenme', {})[urun.id] || 0);
+}
+
+/* ---------- Sıralama (ürün listeleri ve Hediye Rehberi) ---------- */
+const SIRALAMALAR = {
+  '': 'Önerilen',
+  populer: 'En popüler',
+  artan: 'Fiyat: Düşükten yükseğe',
+  azalan: 'Fiyat: Yüksekten düşüğe',
+  yeni: 'En yeniler',
+};
+// Butonun altında görünen kısa ad
+const SIRALAMA_KISA = { '': 'Önerilen', populer: 'En popüler', artan: 'Fiyat: artan', azalan: 'Fiyat: azalan', yeni: 'En yeniler' };
+// Fiyat sıralamaları formülle hesaplanan güncel fiyata göre; katalog ürünleri (fiyatı görünmeyen) her zaman en sonda
+function urunleriSirala(liste, sira) {
+  const sirali = [...liste];
+  const katalogSonda = (a, b) => katalogMu(a) - katalogMu(b);
+  const kurallar = {
+    '': () => 0, // Önerilen: ürün dosyasındaki sıra
+    populer: (a, b) => goruntulenmeSayisi(b) - goruntulenmeSayisi(a),
+    artan: (a, b) => urunEnDusukFiyat(a) - urunEnDusukFiyat(b),
+    azalan: (a, b) => urunEnDusukFiyat(b) - urunEnDusukFiyat(a),
+    yeni: (a, b) => (b.eklenmeTarihi || '').localeCompare(a.eklenmeTarihi || ''),
+  };
+  const kural = kurallar[sira] || kurallar[''];
+  return sirali.sort((a, b) => katalogSonda(a, b) || kural(a, b));
+}
+
+/* ---------- Açılır panel: telefonda alttan açılır, bilgisayarda butonun altında ---------- */
+const IKON_FILTRE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M7 12h10M10 17h4"/></svg>';
+const IKON_SIRALA = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M5 16l3 3 3-3M16 19V5M13 8l3-3 3 3"/></svg>';
+function panelAcKapat(panel, ac) {
+  document.querySelectorAll('.alt-panel:not([hidden])').forEach(p => { if (p !== panel) p.hidden = true; });
+  panel.hidden = !ac;
+  document.querySelectorAll(`[data-panel="${panel.id}"]`).forEach(d => d.setAttribute('aria-expanded', ac));
+  document.body.classList.toggle('panel-acik', !!document.querySelector('.alt-panel:not([hidden])'));
+}
+document.addEventListener('click', e => {
+  const ac = e.target.closest('[data-panel]');
+  if (ac) {
+    const panel = document.getElementById(ac.dataset.panel);
+    panelAcKapat(panel, panel.hidden);
+    return;
+  }
+  // Kapat butonu, panel dışına tıklama ya da arka plan
+  if (e.target.closest('[data-panel-kapat]') || (!e.target.closest('.alt-panel-ic') && document.body.classList.contains('panel-acik'))) {
+    document.querySelectorAll('.alt-panel:not([hidden])').forEach(p => panelAcKapat(p, false));
+  }
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.alt-panel:not([hidden])').forEach(p => panelAcKapat(p, false));
+});
+
+// Sırala butonu + paneli. secili: mevcut sıralama; degisince(yeniSira) seçimde çağrılır
+function siralaAraciHTML(secili) {
+  return `<div class="arac">
+    <button class="arac-dugme" type="button" data-panel="sirala-panel" aria-expanded="false" aria-haspopup="true">
+      ${IKON_SIRALA}<span>Sırala<small id="sirala-secili">${SIRALAMA_KISA[secili] || SIRALAMA_KISA['']}</small></span>
+    </button>
+    <div class="alt-panel" id="sirala-panel" hidden>
+      <div class="alt-panel-ic" role="dialog" aria-label="Sırala">
+        <div class="alt-panel-bas"><strong>Sırala</strong><button type="button" class="panel-kapat" data-panel-kapat aria-label="Kapat">×</button></div>
+        <div class="sirala-liste" role="radiogroup">
+          ${Object.entries(SIRALAMALAR).map(([d, ad]) =>
+            `<button type="button" class="sirala-secenek" role="radio" aria-checked="${d === (secili || '')}" data-sira="${d}">${ad}</button>`).join('')}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+function siralaAraciBagla(kap, degisince) {
+  kap.addEventListener('click', e => {
+    const secenek = e.target.closest('[data-sira]');
+    if (!secenek) return;
+    kap.querySelectorAll('[data-sira]').forEach(s => s.setAttribute('aria-checked', s === secenek));
+    kap.querySelector("#sirala-secili").textContent = SIRALAMA_KISA[secenek.dataset.sira];
+    panelAcKapat(document.getElementById('sirala-panel'), false);
+    degisince(secenek.dataset.sira);
+  });
+}
+
 /* ---------- Hediye paketi (ürün sayfası ve sepet) ---------- */
 const HEDIYE_NOT_SINIRI = 200;
 // ek: aynı sayfada birden fazla bileşen olursa kimlikler karışmasın (sepette satır numarası)

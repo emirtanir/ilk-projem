@@ -55,26 +55,19 @@ function filtreleriCiz() {
           `<button class="cip ${filtre[g.anahtar] === d ? 'secili' : ''}" data-grup="${g.anahtar}" data-deger="${d}">${ad}</button>`
         ).join('')}
       </div>
-    </div>`).join('') + '<button class="filtre-temizle" data-temizle>Filtreleri temizle</button>';
-}
-
-// Sıralama: Önerilen (ürün dosyasındaki sıra; katalog ürünleri sonda), fiyat, en yeniler
-function siralanmis(liste) {
-  const fiyatSirasi = u => (katalogMu(u) ? Infinity : urunEnDusukFiyat(u));
-  const kopya = [...liste];
-  if (filtre.sirala === 'artan') kopya.sort((a, b) => fiyatSirasi(a) - fiyatSirasi(b));
-  else if (filtre.sirala === 'azalan') kopya.sort((a, b) => (katalogMu(b) - katalogMu(a)) || urunEnDusukFiyat(b) - urunEnDusukFiyat(a));
-  else if (filtre.sirala === 'yeni') kopya.sort((a, b) => (b.etiket === 'Yeni') - (a.etiket === 'Yeni') || URUNLER.indexOf(b) - URUNLER.indexOf(a));
-  else kopya.sort((a, b) => katalogMu(a) - katalogMu(b));
-  return kopya;
+    </div>`).join('');
+  // Butonun altındaki kısa özet: kaç filtre seçili
+  const secili = GRUPLAR.filter(g => filtre[g.anahtar]).length;
+  document.getElementById('filtre-ozet').textContent = secili ? `${secili} seçim` : 'Tümü';
 }
 
 function urunleriCiz() {
-  const sonuc = siralanmis(gorunurUrunler().filter(uyuyorMu));
+  const sonuc = urunleriSirala(gorunurUrunler().filter(uyuyorMu), filtre.sirala);
   document.getElementById('urun-izgara').innerHTML = sonuc.length
     ? sonuc.map(urunKartiHTML).join('')
     : '<p class="bos-sonuc">Bu seçimlere uygun ürün bulunamadı.<br>Filtreleri değiştirmeyi deneyin.</p>';
   document.getElementById('sonuc-sayisi').textContent = sonuc.length + ' ürün';
+  document.getElementById('sonuclari-goster').textContent = `${sonuc.length} ürünü göster`;
 
   let baslik = 'Tüm Ürünler';
   let ustBaslik = 'Koleksiyon';
@@ -96,33 +89,37 @@ function urunleriCiz() {
   aciklamaAlani.hidden = !aciklama;
 }
 
+// Seçilen filtreler ve sıralama adres çubuğunda tutulur: sayfa yenilenince ya da geri gelince kaybolmaz
 function adresiGuncelle() {
   const p = new URLSearchParams();
   Object.entries(filtre).forEach(([k, v]) => v && p.set(k, v));
   try { history.replaceState(null, '', location.pathname + (p.toString() ? '?' + p : '')); } catch (e) { /* bazı tarayıcılar dosyadan açılınca izin vermez */ }
 }
 
-document.getElementById('filtreler').addEventListener('click', e => {
-  const cip = e.target.closest('.cip');
-  if (cip) filtre[cip.dataset.grup] = cip.dataset.deger;
-  else if (e.target.closest('[data-temizle]')) Object.keys(filtre).forEach(k => { if (k !== 'sirala') filtre[k] = ''; });
-  else return;
+function yenile() {
   filtreleriCiz();
   urunleriCiz();
   adresiGuncelle();
+}
+
+// Filtre paneli: çipler ve "Filtreleri temizle" (kampanya sayfası ve arama korunur)
+document.getElementById('filtre-panel').addEventListener('click', e => {
+  const cip = e.target.closest('.cip');
+  if (cip) filtre[cip.dataset.grup] = cip.dataset.deger;
+  else if (e.target.closest('[data-temizle]')) GRUPLAR.forEach(g => { filtre[g.anahtar] = ''; });
+  else return;
+  yenile();
 });
 
-const siralaSecim = document.getElementById('sirala');
-siralaSecim.value = filtre.sirala;
-siralaSecim.addEventListener('change', () => {
-  filtre.sirala = siralaSecim.value;
+// Sırala
+const siralaKabi = document.getElementById('sirala-arac');
+siralaKabi.outerHTML = siralaAraciHTML(filtre.sirala);
+siralaAraciBagla(document.getElementById('liste-araclar'), sira => {
+  filtre.sirala = sira;
   urunleriCiz();
   adresiGuncelle();
 });
-
-document.getElementById('filtre-dugme').addEventListener('click', () => {
-  document.getElementById('filtreler').classList.toggle('acik');
-});
+document.getElementById('filtre-ikon').outerHTML = IKON_FILTRE;
 
 filtreleriCiz();
 urunleriCiz();
