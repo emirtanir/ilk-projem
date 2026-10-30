@@ -128,7 +128,7 @@ Arayüz **çok basit** olmalı: serbest çizim yok, adım adım seçim. Her seç
   - Altın tonu: sadece küçük detaylarda
 - **Fontlar:** Başlıklarda zarif serif (Cormorant Garamond, Playfair Display veya Libre Caslon), metinlerde sade sans-serif
 - **Ürün fotoğrafları:** aynı arka plan ve ışık; Instagram'daki "üzerinde" fotoğraflar ikinci görsel olarak
-- **Logo dosyaları:** `logo/` klasöründe (yuvarlak logo + pembe/beyaz/koyu yazı, SVG ve PNG)
+- **Logo dosyaları:** `logo/` klasöründe (yuvarlak logo + pembe/beyaz/koyu yazı, SVG ve PNG). Üst menüde yazı logosunun altında logonun parçası olarak küçük "— SINCE 1989 —" yazısı var (HTML yazı, `.logo-alt`).
 - **Telefon öncelikli** tasarım
 - **Ana sayfa düzeni:** Büyük yuvarlak logo yok. Üst menüde en başta "İnternete Özel Kampanyalar" (gül kurusu #B4705D dolgulu, beyaz yazılı, etiket ikonlu, diğerlerinden farklı görünür; "… TL altı" ürünleri ucuzdan pahalıya listeler), sonra ürün türleri (Kolye, Kolye Ucu, Küpe, Yüzük, Bileklik, Doğal Taş, Kendi Tasarımını Yap, Hakkımızda) + arama, favoriler (kalp, `favoriler.html`), sepet ve hesap ikonları (bu sırayla). İlk ekranda başlığın yanında (telefonda altında) Minimal / Hediyelik / Günlük Kullanım koleksiyon kartları; bilgisayarda kaydırmadan tek ekranda görünür. Altında "Öne Çıkan Ürünler", "Uygun Hediyeler" ve iletişim bölümünün hemen üstünde Instagram bölümü (6 karelik fotoğraf ızgarası, instagram-1…6.jpg). Instagram kullanıcı adı: @lidyakuyum (https://www.instagram.com/lidyakuyum/), `js/iletisim.js` içinde. Instagram yönlendirmelerinde güven için takipçi sayısı (`instagramTakipci`, şimdilik "35 bin") ve "Çekilişler Instagram’da" vurgulanır (ana sayfa, iletişim bölümü, alt kısım).
 
