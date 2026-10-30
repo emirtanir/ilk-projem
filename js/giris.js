@@ -102,7 +102,7 @@ formlar.uye.addEventListener('submit', e => {
     });
     if (error) return mesajYaz(f, hataMesaji(error));
     // E-posta doğrulaması kapalıysa oturum hemen açılır; açıksa doğrulama beklenir
-    if (data.session) return tamamla(data.user, 'Üyeliğiniz oluşturuldu. Hoş geldiniz!');
+    if (data.session) return tamamla(data.user, 'Üyeliğiniz oluşturuldu. Hoş geldiniz.');
     document.getElementById('dogrulama-eposta').textContent = f.eposta.value.trim();
     basligiYaz('Neredeyse tamam', 'Hesabınızı açmak için son bir adım kaldı.');
     panelAc('dogrulama');
@@ -151,7 +151,7 @@ formlar.yeniSifre.addEventListener('submit', e => {
 oturumHazir.then(() => {
   const kullanici = kullaniciGetir();
   if (kullanici && parametre.get('dogrulandi') && !SIFRE_YENILEME_LINKI) {
-    try { sessionStorage.setItem('lidya-giris-mesaji', 'E-postanız doğrulandı, hesabınız açıldı. Hoş geldiniz!'); } catch (e) {}
+    try { sessionStorage.setItem('lidya-giris-mesaji', 'E-postanız doğrulandı, hesabınız açıldı. Hoş geldiniz.'); } catch (e) {}
     location.replace(donusAdresi('hesabim.html'));
   }
 });

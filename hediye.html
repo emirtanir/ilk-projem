@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Hediye Rehberi · Lidya Kuyumculuk</title>
+  <link rel="icon" href="logo/lidya-logo-yuvarlak.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/stil.css">
+</head>
+<body>
+  <div id="ust"></div>
+
+  <main class="kap hediye-sayfa">
+    <div class="sayfa-basi">
+      <span class="kucuk-baslik">Hediye</span>
+      <h1>Hediye Rehberi</h1>
+      <p class="hediye-slogan">Küçük bir parça, büyük bir anlam.</p>
+    </div>
+
+    <!-- Seçimler: her grupta bir seçim (ya da Tümü); ürünler anında filtrelenir (js/hediye.js) -->
+    <div class="hediye-secimler" id="hediye-secimler"></div>
+
+    <div class="liste-ust hediye-sonuc-ust">
+      <span class="sonuc" id="hediye-sonuc"></span>
+      <button class="filtre-temizle" id="hediye-temizle" hidden>Seçimleri temizle</button>
+    </div>
+    <div class="urun-izgara hediye-izgara" id="hediye-izgara"></div>
+
+    <section class="hediye-ozel">
+      <span class="kucuk-baslik">Kendi Tasarımını Yap</span>
+      <h2>Size özel bir hediye mi?</h2>
+      <p>Sevdiğiniz kişinin adı ya da baş harfi, belki birlikte bir fotoğrafınız… Birkaç adımda tasarlayın, size özel üretelim.</p>
+      <a class="dugme" href="tasarla.html">Tasarlamaya Başla</a>
+    </section>
+  </main>
+
+  <div id="alt"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/fiyat.js"></script>
+  <script src="js/urunler.js"></script>
+  <script src="js/iletisim.js"></script>
+  <script src="js/ortak.js"></script>
+  <script src="js/hediye.js"></script>
+</body>
+</html>

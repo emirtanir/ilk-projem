@@ -14,14 +14,25 @@
 
   <main class="kap">
     <div class="sayfa-basi">
-      <span class="kucuk-baslik">Koleksiyon</span>
+      <span class="kucuk-baslik" id="liste-ust-baslik">Koleksiyon</span>
       <h1 id="liste-baslik">Tüm Ürünler</h1>
+      <p id="liste-aciklama" hidden></p>
     </div>
 
     <div class="liste-duzen">
       <div class="liste-ust">
         <span class="sonuc" id="sonuc-sayisi"></span>
-        <button class="dugme dugme-cizgi filtre-dugme" id="filtre-dugme">Filtrele</button>
+        <div class="liste-araclar">
+          <label class="sirala"><span>Sırala</span>
+            <select id="sirala">
+              <option value="">Önerilen</option>
+              <option value="artan">Fiyat: düşükten yükseğe</option>
+              <option value="azalan">Fiyat: yüksekten düşüğe</option>
+              <option value="yeni">En yeniler</option>
+            </select>
+          </label>
+          <button class="dugme dugme-cizgi filtre-dugme" id="filtre-dugme">Filtrele</button>
+        </div>
       </div>
       <aside class="filtreler" id="filtreler"></aside>
       <div class="urun-izgara" id="urun-izgara"></div>

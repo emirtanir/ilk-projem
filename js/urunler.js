@@ -9,15 +9,21 @@
      koleksiyonlar  Ana koleksiyonlardan en az biri: 'minimal' | 'hediyelik' | 'gunluk'
      secenekler  Altın ürünlerde ayar başına gram ve işçilik: { 14: { gram, iscilik }, 22: {...} }
      sabitFiyat  Altın olmayan / sabit fiyatlı ürünlerde TL (secenekler yerine)
+                 Fiyat 30.000 TL ve üzerindeyse ürün kendiliğinden katalog ürünü olur (js/fiyat.js → onlineSatisSiniri).
      tas         Varsa doğal taşın adı (Doğal Taş koleksiyonunda görünür)
      ton         Yer tutucu görselin rengi: 'altin' | 'pembe' | 'krem' | 'firuze' | 'ametist'
      etiket      İsteğe bağlı küçük rozet ('Yeni', 'Çok Satan')
+     kod         Ürün kodu (WhatsApp mesajında ve siparişte görünür)
+     kime        Hediye Rehberi: 'sevgili' | 'anne' | 'arkadas' | 'kendi'
+     gun         Hediye Rehberi: 'dogumgunu' | 'yildonumu' | 'sevgililer' | 'anneler' | 'mezuniyet' | 'yenidogan'
+     kampanya    İsteğe bağlı İnternete Özel Kampanya: { oran: 0.9, bitis: '30 Kasım' } (markalı ürünlerde geçersiz)
      aciklama    Kısa açıklama
    ========================================================= */
 
 const URUNLER = [
   {
     id: 'minimal-nokta-kolye', ad: 'Minimal Nokta Kolye', kategori: 'kolye', marka: 'Atasay',
+    kod: 'LDY-1001', kime: ['kendi', 'arkadas', 'sevgili'], gun: ['dogumgunu', 'mezuniyet'],
     koleksiyonlar: ['minimal', 'gunluk'],
     secenekler: { 14: { gram: 1.6, iscilik: 1200 }, 22: { gram: 1.9, iscilik: 1300 } },
     ton: 'altin', etiket: 'Çok Satan',
@@ -25,6 +31,7 @@ const URUNLER = [
   },
   {
     id: 'sonsuzluk-kolye', ad: 'Sonsuzluk Kolye', kategori: 'kolye', marka: 'Atasay',
+    kod: 'LDY-1002', kime: ['sevgili'], gun: ['yildonumu', 'sevgililer'],
     koleksiyonlar: ['minimal', 'hediyelik'],
     secenekler: { 14: { gram: 2.1, iscilik: 1400 } },
     ton: 'pembe',
@@ -32,6 +39,7 @@ const URUNLER = [
   },
   {
     id: 'damla-tasli-kolye', ad: 'Damla Taşlı Kolye', kategori: 'kolye', marka: 'Favori',
+    kod: 'LDY-1003', kime: ['anne', 'sevgili'], gun: ['anneler', 'dogumgunu'],
     koleksiyonlar: ['hediyelik'],
     secenekler: { 14: { gram: 1.8, iscilik: 1500 } },
     ton: 'krem', etiket: 'Yeni',
@@ -39,6 +47,7 @@ const URUNLER = [
   },
   {
     id: 'firuze-goz-kolye', ad: 'Firuze Taşlı Altın Kolye', kategori: 'kolye', marka: 'Lidya',
+    kod: 'LDY-1004', kime: ['anne', 'kendi'], gun: ['yenidogan', 'anneler'], kampanya: { oran: 0.9, bitis: '30 Kasım' },
     koleksiyonlar: ['hediyelik'],
     secenekler: { 14: { gram: 1.5, iscilik: 1600 } }, tas: 'Firuze',
     ton: 'firuze',
@@ -46,6 +55,7 @@ const URUNLER = [
   },
   {
     id: 'ametist-tas-kolye', ad: 'Ametist Taş Kolye', kategori: 'kolye', marka: 'Lidya',
+    kod: 'LDY-1005', kime: ['arkadas', 'kendi'], gun: ['dogumgunu'],
     koleksiyonlar: ['gunluk'],
     sabitFiyat: 650, tas: 'Ametist',
     ton: 'ametist',
@@ -53,6 +63,7 @@ const URUNLER = [
   },
   {
     id: 'minik-halka-kupe', ad: 'Minik Halka Küpe', kategori: 'kupe', marka: 'Atasay',
+    kod: 'LDY-1006', kime: ['kendi', 'arkadas'], gun: ['mezuniyet', 'dogumgunu'],
     koleksiyonlar: ['minimal', 'gunluk'],
     secenekler: { 14: { gram: 1.2, iscilik: 900 }, 22: { gram: 1.4, iscilik: 1000 } },
     ton: 'altin', etiket: 'Çok Satan',
@@ -60,6 +71,7 @@ const URUNLER = [
   },
   {
     id: 'inci-damla-kupe', ad: 'İnci Damla Küpe', kategori: 'kupe', marka: 'Koçak',
+    kod: 'LDY-1007', kime: ['anne'], gun: ['anneler', 'yildonumu'],
     koleksiyonlar: ['hediyelik'],
     secenekler: { 14: { gram: 1.6, iscilik: 1300 } },
     ton: 'krem',
@@ -67,6 +79,7 @@ const URUNLER = [
   },
   {
     id: 'yildiz-kupe', ad: 'Yıldız Küpe', kategori: 'kupe', marka: 'Favori',
+    kod: 'LDY-1008', kime: ['arkadas', 'kendi'], gun: ['mezuniyet', 'dogumgunu'],
     koleksiyonlar: ['minimal', 'hediyelik'],
     secenekler: { 14: { gram: 1.0, iscilik: 850 } },
     ton: 'pembe', etiket: 'Yeni',
@@ -74,6 +87,7 @@ const URUNLER = [
   },
   {
     id: 'tektas-yuzuk', ad: 'Tektaş Yüzük', kategori: 'yuzuk', marka: 'Atasay',
+    kod: 'LDY-1009', kime: ['sevgili'], gun: ['yildonumu', 'sevgililer'],
     koleksiyonlar: ['hediyelik'],
     secenekler: { 14: { gram: 1.9, iscilik: 1800 }, 22: { gram: 2.3, iscilik: 1900 } },
     ton: 'altin',
@@ -81,6 +95,7 @@ const URUNLER = [
   },
   {
     id: 'zincir-desen-yuzuk', ad: 'Zincir Desen Yüzük', kategori: 'yuzuk', marka: 'Koçak',
+    kod: 'LDY-1010', kime: ['kendi'], gun: ['dogumgunu'],
     koleksiyonlar: ['gunluk'],
     secenekler: { 22: { gram: 2.6, iscilik: 1200 } },
     ton: 'krem',
@@ -88,6 +103,7 @@ const URUNLER = [
   },
   {
     id: 'ametist-yuzuk', ad: 'Ametist Taşlı Yüzük', kategori: 'yuzuk', marka: 'Lidya',
+    kod: 'LDY-1011', kime: ['kendi', 'arkadas'], gun: ['dogumgunu', 'mezuniyet'], kampanya: { oran: 0.9, bitis: '30 Kasım' },
     koleksiyonlar: ['minimal'],
     secenekler: { 14: { gram: 2.2, iscilik: 1700 } }, tas: 'Ametist',
     ton: 'ametist',
@@ -95,6 +111,7 @@ const URUNLER = [
   },
   {
     id: 'zincir-bileklik', ad: 'İnce Zincir Bileklik', kategori: 'bileklik', marka: 'Favori',
+    kod: 'LDY-1012', kime: ['kendi', 'arkadas'], gun: ['mezuniyet'],
     koleksiyonlar: ['minimal', 'gunluk'],
     secenekler: { 14: { gram: 2.4, iscilik: 1100 }, 22: { gram: 2.9, iscilik: 1200 } },
     ton: 'altin',
@@ -102,6 +119,7 @@ const URUNLER = [
   },
   {
     id: 'kalp-bileklik', ad: 'Kalp Bileklik', kategori: 'bileklik', marka: 'Atasay',
+    kod: 'LDY-1013', kime: ['sevgili', 'anne'], gun: ['sevgililer', 'anneler'],
     koleksiyonlar: ['hediyelik'],
     secenekler: { 14: { gram: 1.7, iscilik: 1300 } },
     ton: 'pembe',
@@ -109,6 +127,7 @@ const URUNLER = [
   },
   {
     id: 'firuze-tas-bileklik', ad: 'Firuze Taş Bileklik', kategori: 'bileklik', marka: 'Lidya',
+    kod: 'LDY-1014', kime: ['arkadas', 'kendi'], gun: ['yenidogan', 'dogumgunu'], kampanya: { oran: 0.85, bitis: '30 Kasım' },
     koleksiyonlar: ['gunluk'],
     sabitFiyat: 450, tas: 'Firuze',
     ton: 'firuze', etiket: 'Yeni',
@@ -116,6 +135,7 @@ const URUNLER = [
   },
   {
     id: 'ay-tasi-bileklik', ad: 'Ay Taşı Bileklik', kategori: 'bileklik', marka: 'Lidya',
+    kod: 'LDY-1015', kime: ['arkadas', 'kendi'], gun: ['dogumgunu'],
     koleksiyonlar: ['gunluk', 'hediyelik'],
     sabitFiyat: 520, tas: 'Ay Taşı',
     ton: 'krem',
@@ -124,6 +144,7 @@ const URUNLER = [
   /* ---------- Kolye ucu ---------- */
   {
     id: 'kalp-kolye-ucu', ad: 'Kalp Kolye Ucu', kategori: 'kolyeucu', marka: 'Atasay',
+    kod: 'LDY-1016', kime: ['sevgili', 'anne'], gun: ['sevgililer', 'yenidogan'],
     koleksiyonlar: ['minimal', 'hediyelik'],
     secenekler: { 14: { gram: 0.8, iscilik: 700 }, 22: { gram: 1.0, iscilik: 800 } },
     ton: 'pembe', etiket: 'Yeni',
@@ -131,6 +152,7 @@ const URUNLER = [
   },
   {
     id: 'yildiz-kolye-ucu', ad: 'Yıldız Kolye Ucu', kategori: 'kolyeucu', marka: 'Favori',
+    kod: 'LDY-1017', kime: ['arkadas', 'kendi'], gun: ['mezuniyet', 'yenidogan'],
     koleksiyonlar: ['minimal', 'gunluk'],
     secenekler: { 14: { gram: 0.7, iscilik: 650 } },
     ton: 'altin',
@@ -138,12 +160,43 @@ const URUNLER = [
   },
   {
     id: 'firuze-kolye-ucu', ad: 'Firuze Taşlı Kolye Ucu', kategori: 'kolyeucu', marka: 'Lidya',
+    kod: 'LDY-1018', kime: ['anne', 'arkadas'], gun: ['yenidogan'], kampanya: { oran: 0.9, bitis: '30 Kasım' },
     koleksiyonlar: ['hediyelik'],
     secenekler: { 14: { gram: 0.9, iscilik: 900 } },
     tas: 'Firuze', ton: 'firuze',
     aciklama: 'Altın çerçeve içinde doğal firuze taşı. Zincir dahil değildir.',
   },
+
+  /* ---------- Katalog ürünleri (30.000 TL ve üzeri: online satılmaz, katalogda gösterilir) ---------- */
+  {
+    id: 'burgu-kalin-bileklik', ad: 'Burgu Desen Kalın Bileklik', kategori: 'bileklik', marka: 'Atasay',
+    kod: 'LDY-1019', kime: ['anne', 'kendi'], gun: ['yildonumu'],
+    koleksiyonlar: ['hediyelik'],
+    secenekler: { 22: { gram: 9.5, iscilik: 2500 } },
+    ton: 'altin',
+    aciklama: 'Burgu desenli, dolgun formda bir bileklik. Işıkta her açıdan parlar.',
+  },
+  {
+    id: 'gul-motifli-kolye', ad: 'Gül Motifli Kolye', kategori: 'kolye', marka: 'Favori',
+    kod: 'LDY-1020', kime: ['anne', 'sevgili'], gun: ['yildonumu', 'anneler'],
+    koleksiyonlar: ['hediyelik'],
+    secenekler: { 14: { gram: 13, iscilik: 3000 }, 22: { gram: 14, iscilik: 3000 } },
+    ton: 'pembe',
+    aciklama: 'Gül motifleriyle işlenmiş, özel günlerin kolyesi.',
+  },
+  {
+    id: 'tasli-genis-yuzuk', ad: 'Taşlı Geniş Yüzük', kategori: 'yuzuk', marka: 'Koçak',
+    kod: 'LDY-1021', kime: ['sevgili'], gun: ['yildonumu'],
+    koleksiyonlar: ['hediyelik'],
+    secenekler: { 22: { gram: 8.6, iscilik: 3500 } },
+    ton: 'krem',
+    aciklama: 'Geniş gövdeli, zirkon taşlarla bezeli bir yüzük.',
+  },
 ];
+
+// Hediye Rehberi seçenekleri (ürünlerdeki kime / gun etiketleri)
+const KIME = { sevgili: 'Sevgiliye', anne: 'Anneye', arkadas: 'Arkadaşa', kendi: 'Kendine' };
+const GUNLER = { dogumgunu: 'Doğum günü', yildonumu: 'Yıldönümü', sevgililer: 'Sevgililer Günü', anneler: 'Anneler Günü', mezuniyet: 'Mezuniyet', yenidogan: 'Yeni doğan' };
 
 // Sitenin ana koleksiyonları (ana sayfanın ilk ekranında).
 // gorsel: foto/ klasörüne bu adla fotoğraf koyunca kartta otomatik görünür; yoksa ikon/ton ile yer tutucu çizilir.

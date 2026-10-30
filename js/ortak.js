@@ -34,18 +34,61 @@ function urunKartiHTML(u) {
     <a class="urun-karti-link" href="urun.html?id=${u.id}">
     <div class="urun-karti-gorsel">
       ${gorselHTML(u.kategori, u.ton)}
-      ${u.etiket ? `<span class="rozet">${u.etiket}</span>` : ''}
+      ${kampanyadaMi(u) && !katalogMu(u) ? '<span class="rozet rozet-kampanya">İnternete özel</span>' : u.etiket ? `<span class="rozet">${u.etiket}</span>` : ''}
     </div>
     <div class="urun-karti-bilgi">
       <span class="kucuk-baslik">${u.marka}</span>
       <h3>${u.ad}</h3>
       <span class="ayar-yazi">${ayarYazi}</span>
-      <span class="fiyat">${ayarlar.length > 1 ? 'başlayan ' : ''}${paraYaz(enDusuk)}</span>
-      ${ucretsizKargoMu(enDusuk) ? '<span class="kargo-etiket">Ücretsiz kargo</span>' : ''}
+      ${katalogMu(u)
+        ? '<span class="fiyat katalog-fiyat">Fiyat için bize ulaşın</span><span class="katalog-not">Mağazamızda inceleyebilirsiniz</span>'
+        : `<span class="fiyat">${ayarlar.length > 1 ? 'başlayan ' : ''}${kampanyadaMi(u) ? `<s class="eski-fiyat">${paraYaz(urunEnDusukNormalFiyat(u))}</s> ` : ''}${paraYaz(enDusuk)}</span>
+      ${ucretsizKargoMu(enDusuk) ? '<span class="kargo-etiket">Ücretsiz kargo</span>' : ''}`}
     </div>
     </a>
   </div>`;
 }
+
+/* ---------- Katalog ürünü: WhatsApp'tan bilgi (mesaj ürün adı ve koduyla dolu gelir) ---------- */
+function whatsappBilgiLinki(urun, ayar) {
+  const mesaj = `Merhaba, "${urun.ad}"${ayar ? ` (${ayar} ayar)` : ''} hakkında bilgi almak istiyorum. Ürün kodu: ${urun.kod}`;
+  return `${ILETISIM.whatsappLink}?text=${encodeURIComponent(mesaj)}`;
+}
+
+/* ---------- Hediye paketi (ürün sayfası ve sepet) ---------- */
+const HEDIYE_NOT_SINIRI = 200;
+// ek: aynı sayfada birden fazla bileşen olursa kimlikler karışmasın (sepette satır numarası)
+function hediyeSecenekHTML(ek, hediye) {
+  const h = hediye || {};
+  const not = h.not || '';
+  return `<div class="hediye-secenek" data-hediye="${ek}">
+    <label class="onay hediye-kutu">
+      <input type="checkbox" data-hediye-paket ${h.paket ? 'checked' : ''}>
+      <span>Hediye paketi istiyorum</span>
+      <em class="ucretsiz-etiket">Ücretsiz</em>
+    </label>
+    <div class="hediye-detay" ${h.paket ? '' : 'hidden'}>
+      <label class="alan" for="hediye-not-${ek}">Hediye notunuz</label>
+      <textarea class="metin-girdi" id="hediye-not-${ek}" data-hediye-not rows="3" maxlength="${HEDIYE_NOT_SINIRI}" placeholder="Notunuz karta yazılıp pakete konur.">${kacir(not)}</textarea>
+      <span class="girdi-not hediye-sayac" data-hediye-sayac>${HEDIYE_NOT_SINIRI - not.length} karakter kaldı</span>
+      <p class="hediye-bilgi">Hediye paketinde fiyat bilgisi yer almaz, faturanız size e-postayla gönderilir.</p>
+    </div>
+  </div>`;
+}
+function hediyeDurumu(bilesen) {
+  const paket = bilesen.querySelector('[data-hediye-paket]').checked;
+  return { paket, not: paket ? bilesen.querySelector('[data-hediye-not]').value.trim() : '' };
+}
+// Kutu işaretlenince not alanı açılır; yazdıkça kalan karakter güncellenir
+document.addEventListener('change', e => {
+  if (!e.target.matches('[data-hediye-paket]')) return;
+  e.target.closest('.hediye-secenek').querySelector('.hediye-detay').hidden = !e.target.checked;
+});
+document.addEventListener('input', e => {
+  if (!e.target.matches('[data-hediye-not]')) return;
+  e.target.closest('.hediye-secenek').querySelector('[data-hediye-sayac]').textContent =
+    `${HEDIYE_NOT_SINIRI - e.target.value.length} karakter kaldı`;
+});
 
 /* ---------- Sepet (tarayıcı hafızasında) ---------- */
 let gecici = [];
@@ -57,11 +100,14 @@ function sepetKaydet(sepet) {
   try { localStorage.setItem('lidya-sepet', JSON.stringify(sepet)); } catch (e) { /* hafıza kapalı */ }
   sepetSayaciGuncelle();
 }
-// kalem: { anahtar, ad, detay, fiyat, kategori, ton }
+// kalem: { anahtar, ad, detay, fiyat, kategori, ton, hediye?: { paket, not } }
 function sepeteEkle(kalem) {
   const sepet = sepetGetir();
   const var_ = sepet.find(k => k.anahtar === kalem.anahtar);
-  if (var_) var_.adet += 1; else sepet.push({ ...kalem, adet: 1 });
+  if (var_) {
+    var_.adet += 1;
+    if (kalem.hediye && kalem.hediye.paket) var_.hediye = kalem.hediye; // son seçilen hediye paketi geçerli
+  } else sepet.push({ ...kalem, adet: 1 });
   sepetKaydet(sepet);
   bildirim(`<strong>${kalem.ad}</strong> sepete eklendi. <a href="sepet.html">Sepete git →</a>`);
 }
@@ -204,13 +250,13 @@ function bildirim(html) {
 const IKON_ETIKET = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12.2V4.5a1 1 0 0 1 1-1h7.7l8.3 8.3a1 1 0 0 1 0 1.4l-7.7 7.7a1 1 0 0 1-1.4 0z"/><circle cx="8" cy="8" r="1.5"/></svg>';
 function ustKisimHTML() {
   const linkler = [
-    ['urunler.html?fiyat=' + SATIS_AYARLARI.uygunHediyeSinirlari[1], 'İnternete Özel Kampanyalar'],
     ['urunler.html?kategori=kolye', 'Kolye'],
-    ['urunler.html?kategori=kolyeucu', 'Kolye Ucu'],
     ['urunler.html?kategori=kupe', 'Küpe'],
     ['urunler.html?kategori=yuzuk', 'Yüzük'],
     ['urunler.html?kategori=bileklik', 'Bileklik'],
     ['urunler.html?koleksiyon=dogal-tas', 'Doğal Taş'],
+    ['hediye.html', 'Hediye Rehberi'],
+    ['urunler.html?kampanya=1', 'Kampanyalar'],
     ['tasarla.html', 'Kendi Tasarımını Yap'],
     ['hakkimizda.html', 'Hakkımızda'],
   ];
@@ -225,7 +271,8 @@ function ustKisimHTML() {
       <a class="logo" href="index.html"><img src="logo/lidya-yazi-koyu.svg" alt="Lidya Kuyumculuk"><span class="logo-alt" lang="en">— since 1989 —</span></a>
       <nav class="menu">
         ${linkler.map(([h, a]) => {
-          if (a === 'İnternete Özel Kampanyalar') return `<a href="${h}" class="menu-uygun">${IKON_ETIKET}${a}</a>`;
+          if (a === 'Kampanyalar') return `<a href="${h}" class="menu-uygun">${IKON_ETIKET}${a}</a>`;
+          if (a === 'Hediye Rehberi') return `<a href="${h}" class="menu-hediye">${IKON_HEDIYE}${a}</a>`;
           return `<a href="${h}"${a === 'Kendi Tasarımını Yap' ? ' class="menu-vurgu"' : ''}>${a}</a>`;
         }).join('')}
       </nav>
@@ -280,7 +327,7 @@ function iletisimBolumuHTML() {
         ${ILETISIM.saatler.map(([gun, saat]) => `<p class="saat-satir"><span>${gun}</span><strong>${saat}</strong></p>`).join('')}</div></div>
       <div class="iletisim-satir">${IKON_KONUM}<div><span>Adres</span><p>${ILETISIM.adres}</p></div></div>
       <div class="iletisim-dugmeler">
-        <a class="dugme" href="${ILETISIM.telefonLink}">Hemen Ara</a>
+        <a class="dugme" href="${ILETISIM.telefonLink}">Bizi Arayın</a>
         <a class="dugme dugme-cizgi" href="${ILETISIM.whatsappLink}" target="_blank" rel="noopener">WhatsApp’tan Yaz</a>
       </div>
     </div>
@@ -394,6 +441,12 @@ document.addEventListener('DOMContentLoaded', () => {
   menu.querySelectorAll('a').forEach(a => {
     if (a.getAttribute('href') === burasi) a.classList.add('aktif');
   });
+
+  // Kaydırınca menü sabit kalır ve incelir
+  const ust = document.querySelector('.ust');
+  const incelt = () => ust.classList.toggle('ince', window.scrollY > 24);
+  window.addEventListener('scroll', incelt, { passive: true });
+  incelt();
 
   bolumleriBelirt();
   sepetSayaciGuncelle();

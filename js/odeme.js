@@ -43,6 +43,24 @@ function odemeCiz() {
         : adresAlanlariHTML()}
       </section>
 
+      <!-- Hediye olarak gönderim: alıcının bilgileri ayrı girilir -->
+      <section class="hesap-kart hesap-form">
+        <label class="onay hediye-adres-kutu">
+          <input type="checkbox" id="hediye-gonder">
+          <span><strong>Farklı bir adrese hediye olarak gönder</strong></span>
+        </label>
+        <div class="hediye-alici" id="hediye-alici" hidden>
+          <p class="girdi-not">Sipariş bilgileri ve fatura size gönderilir; pakette fiyat bilgisi yer almaz.</p>
+          <label class="alan">Alıcının adı soyadı <input class="metin-girdi" name="aliciAd" autocomplete="off" disabled required></label>
+          <label class="alan">Alıcının telefonu <input class="metin-girdi" type="tel" name="aliciTelefon" inputmode="tel" autocomplete="off" placeholder="05xx xxx xx xx" disabled required></label>
+          <div class="alan-cift">
+            <label class="alan">İl <input class="metin-girdi" name="aliciIl" autocomplete="off" disabled required></label>
+            <label class="alan">İlçe <input class="metin-girdi" name="aliciIlce" autocomplete="off" disabled required></label>
+          </div>
+          <label class="alan">Alıcının açık adresi <textarea class="metin-girdi" name="aliciAdres" rows="3" autocomplete="off" disabled required></textarea></label>
+        </div>
+      </section>
+
       <section class="hesap-kart">
         <h3>Ödeme</h3>
         <div class="prototip-uyari">Kart bilgileri ödeme şirketinin güvenli sayfasında alınır. Bu prototipte ödeme adımı bulunmuyor.</div>
@@ -56,7 +74,8 @@ function odemeCiz() {
     <aside class="ozet">
       <h3>Sipariş Özeti</h3>
       <ul class="odeme-kalemler">
-        ${sepet.map(s => `<li><span>${s.adet > 1 ? s.adet + ' × ' : ''}${s.ad}<small>${s.detay}</small></span><span>${s.siparisUsulu ? '≈ ' : ''}${paraYaz(s.fiyat * s.adet)}</span></li>`).join('')}
+        ${sepet.map(s => `<li><span>${s.adet > 1 ? s.adet + ' × ' : ''}${s.ad}<small>${s.detay}</small>${s.hediye && s.hediye.paket
+          ? `<small class="ozet-hediye">Hediye paketi · Ücretsiz${s.hediye.not ? ` · Not: “${kacir(s.hediye.not)}”` : ''}</small>` : ''}</span><span>${s.siparisUsulu ? '≈ ' : ''}${paraYaz(s.fiyat * s.adet)}</span></li>`).join('')}
       </ul>
       <div class="ozet-satir"><span>Ara toplam${tasarimVar ? ' (tahmini)' : ''}</span><span>${paraYaz(araToplam)}</span></div>
       <div class="ozet-satir"><span>Kargo</span><span>${kargo ? paraYaz(kargo) : '<strong class="ucretsiz">Ücretsiz</strong>'}</span></div>
@@ -76,6 +95,7 @@ function tamamlandiCiz(bilgi) {
     <div class="tamam-isaret" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9"/></svg></div>
     <h1>Siparişiniz alındı</h1>
     <p>Sipariş numaranız <strong>${no}</strong>. Sipariş özetini <strong>${kacir(bilgi.eposta)}</strong> adresine gönderdik.</p>
+    ${bilgi.hediyeAlici ? `<p class="tamam-not">Hediyeniz <strong>${kacir(bilgi.hediyeAlici)}</strong> için belirttiğiniz adrese gönderilecek. Pakette fiyat bilgisi yer almaz.</p>` : ''}
     <p class="tamam-not">En geç 3 iş günü içinde kargoda (özel gün ve pazar hariç).${tasarimVar ? ' Kendi tasarımınızın kesin fiyatını üretimden sonra size bildireceğiz.' : ''}</p>
 
     ${kullanici ? `<div class="tamam-dugmeler">
@@ -134,6 +154,13 @@ if (sepet.length) {
   odemeCiz();
 
   alan.addEventListener('change', e => {
+    // Hediye olarak gönder: alıcı alanları açılır ve zorunlu olur
+    if (e.target.id === 'hediye-gonder') {
+      const alici = document.getElementById('hediye-alici');
+      alici.hidden = !e.target.checked;
+      alici.querySelectorAll('input, textarea').forEach(g => { g.disabled = alici.hidden; });
+      return;
+    }
     if (e.target.name !== 'kayitliAdres') return;
     const yeni = document.getElementById('yeni-adres');
     yeni.hidden = e.target.value !== 'yeni';
@@ -146,7 +173,8 @@ if (sepet.length) {
     if (e.target.id !== 'odeme-form') return;
     e.preventDefault();
     const f = e.target;
-    const bilgi = { ad: f.ad.value.trim(), eposta: f.eposta.value.trim(), telefon: f.telefon.value.trim() };
+    const bilgi = { ad: f.ad.value.trim(), eposta: f.eposta.value.trim(), telefon: f.telefon.value.trim(),
+      hediyeAlici: f.querySelector('#hediye-gonder').checked ? f.aliciAd.value.trim() : '' };
     sepetKaydet([]);
     tamamlandiCiz(bilgi);
   });

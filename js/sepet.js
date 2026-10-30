@@ -33,6 +33,7 @@ function sepetCiz() {
               <strong>${k.siparisUsulu ? '≈ ' : ''}${paraYaz(k.fiyat * k.adet)}</strong>
             </div>
             ${k.siparisUsulu ? `<p class="kalem-kapora">Tahmini fiyat · şimdi ödenecek kapora <strong>${paraYaz(k.kapora * k.adet)}</strong></p>` : ''}
+            ${hediyeSecenekHTML('k' + i, k.hediye).replace('class="hediye-secenek"', `class="hediye-secenek" data-i="${i}"`)}
             <button class="sil" data-islem="sil" data-i="${i}">Kaldır</button>
           </div>
         </div>`).join('')}
@@ -60,7 +61,7 @@ function devamSecenekleriHTML() {
   const kullanici = kullaniciGetir();
   if (kullanici) {
     return `<a class="dugme dugme-genis" href="odeme.html">Ödemeye Geç</a>
-      <p class="devam-not">${kullanici.ad} olarak giriş yaptınız.</p>`;
+      <p class="devam-not">${kacir(kullanici.ad || kullanici.eposta)} olarak giriş yaptınız.</p>`;
   }
   return `<div class="devam-secenek">
       <a class="dugme dugme-genis" href="odeme.html?misafir=1">Üye olmadan devam et</a>
@@ -83,5 +84,16 @@ document.getElementById('sepet').addEventListener('click', e => {
   sepetKaydet(sepet);
   sepetCiz();
 });
+
+// Hediye paketi ve notu: değiştikçe sepete kaydedilir (sayfa yeniden çizilmez, yazarken imleç kaybolmaz)
+function hediyeyiKaydet(e) {
+  const bilesen = e.target.closest('.hediye-secenek[data-i]');
+  if (!bilesen) return;
+  const sepet = sepetGetir();
+  sepet[bilesen.dataset.i].hediye = hediyeDurumu(bilesen);
+  sepetKaydet(sepet);
+}
+document.getElementById('sepet').addEventListener('change', hediyeyiKaydet);
+document.getElementById('sepet').addEventListener('input', hediyeyiKaydet);
 
 sepetCiz();

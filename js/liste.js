@@ -7,6 +7,8 @@ const filtre = {
   marka: parametreler.get('marka') || '',
   ayar: parametreler.get('ayar') || '',
   fiyat: parametreler.get('fiyat') || '',
+  kampanya: parametreler.get('kampanya') || '',
+  sirala: parametreler.get('sirala') || '',   // boş = Önerilen
   ara: (parametreler.get('ara') || '').trim(),
 };
 
@@ -20,7 +22,7 @@ const GRUPLAR = [
   { anahtar: 'koleksiyon', baslik: 'Koleksiyon', secenekler: KOLEKSIYON_SECENEKLERI },
   { anahtar: 'kategori', baslik: 'Ürün türü', secenekler: Object.entries(KATEGORILER) },
   { anahtar: 'marka', baslik: 'Marka', secenekler: MARKALAR.map(m => [m, m]) },
-  { anahtar: 'fiyat', baslik: 'Fiyat', secenekler: SATIS_AYARLARI.uygunHediyeSinirlari.map(s => [String(s), paraYaz(s) + ' altı']) },
+  { anahtar: 'fiyat', baslik: 'Fiyat', secenekler: SATIS_AYARLARI.fiyatFiltreleri.map(s => [String(s), paraYaz(s) + ' altı']) },
   { anahtar: 'ayar', baslik: 'Ayar', secenekler: [['14', '14 ayar'], ['22', '22 ayar']] },
 ];
 
@@ -33,6 +35,7 @@ function aramayaUyuyor(u) {
 
 function uyuyorMu(u) {
   if (filtre.ara && !aramayaUyuyor(u)) return false;
+  if (filtre.kampanya && !(kampanyadaMi(u) && !katalogMu(u))) return false;
   if (filtre.koleksiyon === 'dogal-tas' && !u.tas) return false;
   if (KOLEKSIYONLAR[filtre.koleksiyon] && !u.koleksiyonlar.includes(filtre.koleksiyon)) return false;
   if (filtre.kategori && u.kategori !== filtre.kategori) return false;
@@ -55,23 +58,42 @@ function filtreleriCiz() {
     </div>`).join('') + '<button class="filtre-temizle" data-temizle>Filtreleri temizle</button>';
 }
 
+// Sıralama: Önerilen (ürün dosyasındaki sıra; katalog ürünleri sonda), fiyat, en yeniler
+function siralanmis(liste) {
+  const fiyatSirasi = u => (katalogMu(u) ? Infinity : urunEnDusukFiyat(u));
+  const kopya = [...liste];
+  if (filtre.sirala === 'artan') kopya.sort((a, b) => fiyatSirasi(a) - fiyatSirasi(b));
+  else if (filtre.sirala === 'azalan') kopya.sort((a, b) => (katalogMu(b) - katalogMu(a)) || urunEnDusukFiyat(b) - urunEnDusukFiyat(a));
+  else if (filtre.sirala === 'yeni') kopya.sort((a, b) => (b.etiket === 'Yeni') - (a.etiket === 'Yeni') || URUNLER.indexOf(b) - URUNLER.indexOf(a));
+  else kopya.sort((a, b) => katalogMu(a) - katalogMu(b));
+  return kopya;
+}
+
 function urunleriCiz() {
-  const sonuc = URUNLER.filter(uyuyorMu);
-  if (filtre.fiyat) sonuc.sort((a, b) => urunEnDusukFiyat(a) - urunEnDusukFiyat(b)); // ucuzdan pahalıya
+  const sonuc = siralanmis(gorunurUrunler().filter(uyuyorMu));
   document.getElementById('urun-izgara').innerHTML = sonuc.length
     ? sonuc.map(urunKartiHTML).join('')
     : '<p class="bos-sonuc">Bu seçimlere uygun ürün bulunamadı.<br>Filtreleri değiştirmeyi deneyin.</p>';
-  document.getElementById('sonuc-sayisi').textContent = sonuc.length + ' ürün' +
-    (filtre.fiyat ? ` · ${paraYaz(Number(filtre.fiyat))} altı, ucuzdan pahalıya` : '');
+  document.getElementById('sonuc-sayisi').textContent = sonuc.length + ' ürün';
 
   let baslik = 'Tüm Ürünler';
-  if (filtre.ara) baslik = `“${filtre.ara}” için sonuçlar`;
+  let ustBaslik = 'Koleksiyon';
+  let aciklama = '';
+  if (filtre.kampanya) {
+    baslik = 'İnternete Özel Kampanyalar';
+    ustBaslik = 'Kampanyalar';
+    aciklama = 'Sadece sitemize özel fiyatlar. Markalı ürünler kampanyaya dahil değildir.';
+  } else if (filtre.ara) baslik = `“${filtre.ara}” için sonuçlar`;
   else if (filtre.koleksiyon === 'dogal-tas') baslik = 'Doğal Taş Koleksiyonu';
   else if (KOLEKSIYONLAR[filtre.koleksiyon]) baslik = KOLEKSIYONLAR[filtre.koleksiyon].ad;
   else if (filtre.kategori) baslik = KATEGORILER[filtre.kategori];
   else if (filtre.marka) baslik = filtre.marka;
-  else if (filtre.fiyat) baslik = 'İnternete Özel Kampanyalar';
+  else if (filtre.fiyat) baslik = paraYaz(Number(filtre.fiyat)) + ' altı';
   document.getElementById('liste-baslik').textContent = baslik;
+  document.getElementById('liste-ust-baslik').textContent = ustBaslik;
+  const aciklamaAlani = document.getElementById('liste-aciklama');
+  aciklamaAlani.textContent = aciklama;
+  aciklamaAlani.hidden = !aciklama;
 }
 
 function adresiGuncelle() {
@@ -83,9 +105,17 @@ function adresiGuncelle() {
 document.getElementById('filtreler').addEventListener('click', e => {
   const cip = e.target.closest('.cip');
   if (cip) filtre[cip.dataset.grup] = cip.dataset.deger;
-  else if (e.target.closest('[data-temizle]')) Object.keys(filtre).forEach(k => (filtre[k] = ''));
+  else if (e.target.closest('[data-temizle]')) Object.keys(filtre).forEach(k => { if (k !== 'sirala') filtre[k] = ''; });
   else return;
   filtreleriCiz();
+  urunleriCiz();
+  adresiGuncelle();
+});
+
+const siralaSecim = document.getElementById('sirala');
+siralaSecim.value = filtre.sirala;
+siralaSecim.addEventListener('change', () => {
+  filtre.sirala = siralaSecim.value;
   urunleriCiz();
   adresiGuncelle();
 });

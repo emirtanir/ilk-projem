@@ -3,7 +3,8 @@
 const urunId = new URLSearchParams(location.search).get('id');
 const urun = URUNLER.find(u => u.id === urunId) || URUNLER[0];
 const ayarlar = urun.secenekler ? Object.keys(urun.secenekler) : [];
-let seciliAyar = ayarlar[0];
+// Varsayılan: online satılabilen ilk ayar (hepsi sınırın üstündeyse ilk ayar, katalog görünümüyle)
+let seciliAyar = ayarlar.find(a => ayarSatilabilirMi(urun, a)) || ayarlar[0];
 
 const IKON_KARGO = '<svg viewBox="0 0 24 24"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg>';
 const IKON_SAAT = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>';
@@ -29,7 +30,9 @@ function detayCiz() {
       <span class="kucuk-baslik">${urun.marka}${urun.tas ? ' · ' + urun.tas : ''}</span>
       <div class="detay-baslik"><h1>${urun.ad}</h1>${kalpDugmesiHTML(urun.id)}</div>
       <div class="detay-fiyat" id="fiyat"></div>
-      <div class="fiyat-not">${urun.sabitFiyat ? 'Sabit fiyatlı ürün' : 'Fiyat, güncel altın fiyatına göre hesaplanır.'}</div>
+      <p class="kampanya-not" id="kampanya-not" hidden></p>
+      <p class="katalog-bilgi" id="katalog-bilgi" hidden>Mağazamızda inceleyebilirsiniz</p>
+      <div class="fiyat-not" id="fiyat-not">${urun.sabitFiyat ? 'Sabit fiyatlı ürün' : 'Fiyat, güncel altın fiyatına göre hesaplanır.'}</div>
 
       <div class="ozellikler">
         <div><span>Gram</span><strong id="gram">${urun.sabitFiyat ? '—' : ''}</strong></div>
@@ -46,9 +49,12 @@ function detayCiz() {
       <p>${urun.aciklama}</p>
       ${tas ? `<p class="fiyat-not"><strong>${tas.ad}:</strong> ${tas.anlam}</p>` : ''}
 
+      <div id="hediye-alani">${hediyeSecenekHTML('urun')}</div>
+
       <div class="mobil-cubuk">
         <div class="cubuk-fiyat" id="cubuk-fiyat"></div>
         <button class="dugme" id="sepete-ekle">Sepete Ekle</button>
+        <a class="dugme dugme-wa-bilgi" id="wa-bilgi" target="_blank" rel="noopener" hidden>${IKON_WA} WhatsApp’tan Bilgi Al</a>
       </div>
 
       <div class="bilgi-kutusu">
@@ -62,9 +68,28 @@ function detayCiz() {
 
 function secimiGuncelle() {
   const fiyat = urunFiyati(urun, seciliAyar);
-  document.getElementById('fiyat').textContent = paraYaz(fiyat);
+  // Formülle hesaplanan fiyat online satış sınırının üstündeyse katalog görünümü
+  const katalog = !ayarSatilabilirMi(urun, seciliAyar);
+  const kampanya = kampanyadaMi(urun) && !katalog;
+  const fiyatAlani = document.getElementById('fiyat');
+  fiyatAlani.innerHTML = katalog ? 'Fiyat için bize ulaşın'
+    : (kampanya ? `<s class="eski-fiyat">${paraYaz(urunNormalFiyati(urun, seciliAyar))}</s> ` : '') + paraYaz(fiyat);
+  fiyatAlani.classList.toggle('katalog-fiyat', katalog);
+  document.getElementById('katalog-bilgi').hidden = !katalog;
+  document.getElementById('fiyat-not').hidden = katalog;
+  const kampanyaNot = document.getElementById('kampanya-not');
+  kampanyaNot.hidden = !kampanya;
+  if (kampanya) kampanyaNot.textContent = 'İnternete özel kampanya' + (urun.kampanya.bitis ? ` · ${urun.kampanya.bitis} tarihine kadar` : '');
+  document.getElementById('hediye-alani').hidden = katalog;
+  document.getElementById('sepete-ekle').hidden = katalog;
+  const wa = document.getElementById('wa-bilgi');
+  wa.hidden = !katalog;
+  wa.href = whatsappBilgiLinki(urun, seciliAyar);
+  // Katalog ürününde alt çubukta sadece WhatsApp butonu (tam genişlik)
+  document.getElementById('cubuk-fiyat').hidden = katalog;
+  wa.closest('.mobil-cubuk').classList.toggle('katalog-cubuk', katalog);
   document.getElementById('cubuk-fiyat').innerHTML =
-    paraYaz(fiyat) + (seciliAyar ? `<small>${seciliAyar} ayar · ${gramYaz(urun.secenekler[seciliAyar].gram)}</small>` : '');
+    (katalog ? 'Fiyat için bize ulaşın' : paraYaz(fiyat)) + (seciliAyar ? `<small>${seciliAyar} ayar · ${gramYaz(urun.secenekler[seciliAyar].gram)}</small>` : '');
   if (seciliAyar) {
     document.getElementById('gram').textContent = gramYaz(urun.secenekler[seciliAyar].gram);
     document.getElementById('ayar').textContent = seciliAyar + ' ayar';
@@ -88,20 +113,22 @@ document.getElementById('detay').addEventListener('click', e => {
     document.querySelectorAll('.galeri-kucuk button').forEach(b => b.classList.toggle('secili', b === kucuk));
   }
 
-  if (e.target.closest('#sepete-ekle')) {
+  if (e.target.closest('#sepete-ekle') && ayarSatilabilirMi(urun, seciliAyar)) {
     sepeteEkle({
       anahtar: urun.id + '-' + (seciliAyar || 'sabit'),
       ad: urun.ad,
+      kod: urun.kod,
       detay: seciliAyar ? `${seciliAyar} ayar · ${gramYaz(urun.secenekler[seciliAyar].gram)}` : (urun.tas || 'Doğal taş'),
       fiyat: urunFiyati(urun, seciliAyar),
       kategori: urun.kategori,
       ton: urun.ton,
+      hediye: hediyeDurumu(document.querySelector('#hediye-alani .hediye-secenek')),
     });
   }
 });
 
 // Aynı kategoriden öneriler
-const benzerler = URUNLER.filter(u => u.kategori === urun.kategori && u.id !== urun.id).slice(0, 4);
+const benzerler = gorunurUrunler().filter(u => u.kategori === urun.kategori && u.id !== urun.id).slice(0, 4);
 if (benzerler.length) {
   document.getElementById('benzer-izgara').innerHTML = benzerler.map(urunKartiHTML).join('');
   document.getElementById('benzerler').hidden = false;

@@ -18,7 +18,8 @@
       <div class="kap giris-duzen">
         <div class="giris-baslik">
           <span class="kucuk-baslik">1989’dan beri Manavgat’ta</span>
-          <h1>Zarafet,<br>nesilden nesile.</h1>
+          <h1>Her güne bir parça zarafet.</h1>
+          <p class="giris-ikinci">Zarafet, nesilden nesile.</p>
         </div>
         <div class="giris-kartlar" id="koleksiyonlar"></div>
         <div class="giris-alt">
@@ -31,6 +32,11 @@
       </div>
     </section>
 
+    <!-- 15.000 TL altı şeridi -->
+    <div class="kap">
+      <a class="zarif-serit" id="zarif-serit" href="urunler.html?fiyat=15000"></a>
+    </div>
+
     <!-- Öne çıkan ürünler -->
     <section class="bolum kap">
       <div class="bolum-baslik">
@@ -41,16 +47,29 @@
       <div class="ortala"><a class="dugme dugme-cizgi" href="urunler.html">Tüm Ürünler</a></div>
     </section>
 
-    <!-- Uygun hediyeler -->
+    <!-- İnternete Özel Kampanyalar -->
     <section class="bolum kap">
       <div class="bolum-baslik">
-        <span class="kucuk-baslik">Bütçe dostu</span>
-        <h2>Uygun Hediyeler</h2>
-        <p>Her bütçeye uygun, sevdiklerinizi mutlu edecek seçenekler.</p>
+        <span class="kucuk-baslik">Kampanyalar</span>
+        <h2>İnternete Özel Kampanyalar</h2>
+        <p>Sadece sitemize özel fiyatlar.</p>
       </div>
-      <div class="fiyat-cipleri" id="fiyat-cipleri"></div>
-      <div class="urun-izgara one-cikan-izgara" id="uygun-hediyeler"></div>
+      <div class="urun-izgara one-cikan-izgara" id="kampanyalar"></div>
+      <div class="ortala"><a class="dugme dugme-cizgi" href="urunler.html?kampanya=1">Tüm Kampanyalar</a></div>
       <div class="kargo-bandi" id="kargo-bandi"></div>
+    </section>
+
+    <!-- Hediye Rehberi -->
+    <section class="bolum hediye-tanitim">
+      <div class="kap">
+        <div class="bolum-baslik">
+          <span class="kucuk-baslik">Hediye Rehberi</span>
+          <h2>Küçük bir parça, büyük bir anlam.</h2>
+          <p>Kime ve hangi gün için olduğunu seçin, size uygun hediyeleri gösterelim.</p>
+        </div>
+        <div class="kime-kartlar" id="kime-kartlar"></div>
+        <div class="ortala"><a class="dugme" href="hediye.html">Hediye Rehberi’ne Git</a></div>
+      </div>
     </section>
 
     <!-- Doğal Taş -->
@@ -156,16 +175,19 @@
       </a>`
     ).join('');
     document.getElementById('one-cikanlar').innerHTML = ONE_CIKANLAR
-      .map(id => URUNLER.find(u => u.id === id)).filter(Boolean).map(urunKartiHTML).join('');
-    // Uygun hediyeler: fiyat aralığı kartları + en uygun fiyatlı 4 ürün + kargo bandı
-    const sinirlar = SATIS_AYARLARI.uygunHediyeSinirlari;
-    document.getElementById('fiyat-cipleri').innerHTML = sinirlar.map(s =>
-      `<a class="fiyat-cip" href="urunler.html?fiyat=${s}"><strong>${paraYaz(s)}</strong><span>altı hediyeler →</span></a>`
+      .map(id => gorunurUrunler().find(u => u.id === id)).filter(Boolean).map(urunKartiHTML).join('');
+    // "15.000 TL altı zarif seçimler" şeridi (sınır js/fiyat.js içinde)
+    const zarif = SATIS_AYARLARI.zarifSecimSiniri;
+    const zarifSerit = document.getElementById('zarif-serit');
+    zarifSerit.href = `urunler.html?fiyat=${zarif}`;
+    zarifSerit.innerHTML = `<span><strong>${paraYaz(zarif)} altı</strong> zarif seçimler</span><span class="serit-ok" aria-hidden="true">→</span>`;
+    // İnternete Özel Kampanyalar (en fazla 4 ürün)
+    document.getElementById('kampanyalar').innerHTML = gorunurUrunler()
+      .filter(u => kampanyadaMi(u) && !katalogMu(u)).slice(0, 4).map(urunKartiHTML).join('');
+    // Hediye Rehberi: "Kime?" kısayolları
+    document.getElementById('kime-kartlar').innerHTML = Object.entries(KIME).map(([k, ad]) =>
+      `<a class="kime-kart" href="hediye.html?kime=${k}">${IKON_HEDIYE}<span>${ad}</span></a>`
     ).join('');
-    document.getElementById('uygun-hediyeler').innerHTML = URUNLER
-      .filter(u => urunEnDusukFiyat(u) < sinirlar[sinirlar.length - 1])
-      .sort((a, b) => urunEnDusukFiyat(a) - urunEnDusukFiyat(b))
-      .slice(0, 4).map(urunKartiHTML).join('');
     document.getElementById('kargo-bandi').innerHTML = `
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></svg>
       <p><strong>${paraYaz(SATIS_AYARLARI.ucretsizKargoSiniri)} ve üzeri siparişlerde kargo ücretsiz</strong>

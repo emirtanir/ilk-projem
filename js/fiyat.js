@@ -17,11 +17,24 @@ function altinFiyatHesapla(gram, ayar, iscilik) {
   return Math.round(fiyat / 10) * 10; // 10 TL'ye yuvarla
 }
 
-// Katalog ürününün fiyatı (urunler.js'teki bir ürün + seçilen ayar)
-function urunFiyati(urun, ayar) {
+// Ürünün kampanyasız (normal) fiyatı: urunler.js'teki bir ürün + seçilen ayar
+function urunNormalFiyati(urun, ayar) {
   if (urun.sabitFiyat) return urun.sabitFiyat; // doğal taş vb. sabit fiyatlı ürünler
   const secenek = urun.secenekler[ayar];
   return altinFiyatHesapla(secenek.gram, ayar, secenek.iscilik);
+}
+
+// Satış fiyatı: kampanyadaysa kampanyalı fiyat, değilse normal fiyat
+function urunFiyati(urun, ayar) {
+  const normal = urunNormalFiyati(urun, ayar);
+  return kampanyadaMi(urun) ? Math.round(normal * urun.kampanya.oran / 10) * 10 : normal;
+}
+
+// İnternete Özel Kampanyalar: markalı ürünler (Atasay, Favori, Koçak) kampanyaya girmez.
+// Gerçek sitede eski fiyat, son 30 günün en düşük fiyatı olmalı (Ticari Reklam Yönetmeliği).
+const KAMPANYA_DISI_MARKALAR = ['Atasay', 'Favori', 'Koçak'];
+function kampanyadaMi(urun) {
+  return !!urun.kampanya && !KAMPANYA_DISI_MARKALAR.includes(urun.marka);
 }
 
 /* ---------- Kendi Tasarımını Yap: gram ve işçilik değerleri (ÖRNEK) ---------- */
@@ -77,7 +90,14 @@ function gramYaz(gram) {
 const SATIS_AYARLARI = {
   ucretsizKargoSiniri: 2000,               // bu tutar ve üzeri siparişlerde kargo ücretsiz (TL)
   kargoUcreti: 150,                        // sınırın altındaki siparişlerde kargo ücreti (TL)
-  uygunHediyeSinirlari: [1000, 5000, 7500], // "Uygun Hediyeler" ve fiyat filtresi: "… TL altı"
+  fiyatFiltreleri: [5000, 10000, 15000, 30000], // ürün listesi ve Hediye Rehberi: "… TL altı"
+
+  // ONLINE SATIŞ SINIRI: formülle hesaplanan fiyat bu tutar ve üzerindeyse ürün online satılmaz,
+  // katalogda gösterilir ("Fiyat için bize ulaşın" + "WhatsApp'tan Bilgi Al"). Altın fiyatı değişince
+  // ürün kendiliğinden satılabilir ya da katalog durumuna geçer.
+  onlineSatisSiniri: 30000,
+  zarifSecimSiniri: 15000,                 // ana sayfadaki "15.000 TL altı zarif seçimler" şeridi
+  katalogUrunleriniGizle: false,           // true: katalog ürünleri sitede hiç görünmez (varsayılan: göster)
   tasarimKaporaOrani: 0.3,                  // Kendi Tasarımını Yap: siparişte alınan kapora (tahmini fiyatın %30'u)
 };
 
@@ -107,4 +127,24 @@ function sepetToplamlari(sepet) {
   const kalanTutar = sepet.reduce((t, k) => t + (k.siparisUsulu ? (k.fiyat - k.kapora) * k.adet : 0), 0);
   const kargo = kargoUcreti(araToplam);
   return { araToplam, kalanTutar, kargo, tasarimVar: sepet.some(k => k.siparisUsulu), simdiOdenecek: araToplam + kargo - kalanTutar };
+}
+
+/* ---------- Online satış sınırı / katalog ---------- */
+// Seçilen ayarda ürün online satılabilir mi? (fiyat formülle hesaplandıktan sonra sınırla karşılaştırılır)
+function ayarSatilabilirMi(urun, ayar) {
+  return urunFiyati(urun, ayar) < SATIS_AYARLARI.onlineSatisSiniri;
+}
+// En uygun seçeneği bile sınırın üstündeyse ürün katalog ürünüdür
+function katalogMu(urun) {
+  return urunEnDusukFiyat(urun) >= SATIS_AYARLARI.onlineSatisSiniri;
+}
+// Sitede listelenecek ürünler (katalog gizleme ayarı açıksa katalog ürünleri çıkar)
+function gorunurUrunler() {
+  return SATIS_AYARLARI.katalogUrunleriniGizle ? URUNLER.filter(u => !katalogMu(u)) : URUNLER;
+}
+
+// Kampanyalı üründe üstü çizili gösterilecek eski fiyat (en uygun seçeneğin normal fiyatı)
+function urunEnDusukNormalFiyat(urun) {
+  if (urun.sabitFiyat) return urun.sabitFiyat;
+  return Math.min(...Object.keys(urun.secenekler).map(a => urunNormalFiyati(urun, a)));
 }

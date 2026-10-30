@@ -88,6 +88,7 @@ Tek bir dosyada (`js/iletisim.js`) tutulur.
 - **Hikâye başlığı:** "Zarafet, nesilden nesile."
 - **Hediye sloganı:** "Küçük bir parça, büyük bir anlam."
 - "1989'dan beri" kısa etiketlerde, "1989'dan Bugüne" başlıklarda.
+- **İlk ekran düzeni:** Başlık ana slogan "Her güne bir parça zarafet." (büyük serif). Hemen altında "Zarafet, nesilden nesile." daha küçük, italik, gül kurusu renkte ikinci satır olarak durur; üstte küçük "1989'dan beri Manavgat'ta" etiketi.
 
 ## 7. Tasarım
 
@@ -224,7 +225,7 @@ Eski özetten korunan teknik bilgiler. Yukarıdaki kararlarla çelişirse yukar�
 - **KVKK:** Sunucu yurt dışında (Frankfurt) olduğu için yurt dışına aktarım yükümlülükleri (standart sözleşme + KVKK Kurumu'na bildirim) avukat/muhasebeciyle teyit edilecek. Bedava katmanda otomatik yedek yok; yedekleme yöntemi belirlenecek.
 
 ### Dosya yapısı
-- **Sayfalar:** `index.html`, `urunler.html` (liste; `?kategori=`, `?koleksiyon=`, `?marka=`, `?fiyat=`, `?ara=`), `urun.html?id=`, `tasarla.html`, `hakkimizda.html`, `sepet.html`, `odeme.html`, `giris.html` (`?sekme=uye`, `?donus=`), `hesabim.html` (`#siparisler`, `#tasarimlar`, `#favoriler`, `#adresler`, `#bilgiler`), `favoriler.html`, `kvkk.html` (yer tutucu).
+- **Sayfalar:** `index.html`, `hediye.html`, `urunler.html` (liste; `?kategori=`, `?koleksiyon=`, `?marka=`, `?fiyat=`, `?ara=`), `urun.html?id=`, `tasarla.html`, `hakkimizda.html`, `sepet.html`, `odeme.html`, `giris.html` (`?sekme=uye`, `?donus=`), `hesabim.html` (`#siparisler`, `#tasarimlar`, `#favoriler`, `#adresler`, `#bilgiler`), `favoriler.html`, `kvkk.html` (yer tutucu).
 - **Stil:** `css/stil.css` (tüm stiller; renk/font değişkenleri en üstte `:root`).
 - **Kod:**
   - `js/iletisim.js` → `ILETISIM`: telefon, WhatsApp, e-posta, `adres` ("Yukarı Hisar, Antalya Cd. No:50, 07600 Manavgat/Antalya"), `instagramKullanici` ('lidyakuyum'), `instagramTakipci` ('35 bin'), çalışma saatleri, konum.
@@ -233,6 +234,12 @@ Eski özetten korunan teknik bilgiler. Yukarıdaki kararlarla çelişirse yukar�
   - `js/ortak.js` → üst menü, alt kısım, iletişim bölümü, ürün kartı, sepet, favoriler, kayıtlı tasarımlar, hesap/oturum yardımcıları, bildirim.
   - `js/supabase.js` → Supabase bağlantısı ve Türkçe hata mesajları.
   - `js/liste.js`, `js/detay.js`, `js/sepet.js`, `js/odeme.js`, `js/giris.js`, `js/hesap.js`, `js/tasarla.js`, `js/onizleme.js` (tasarım önizleme SVG'leri, `tasarimKalemi`).
+- **Satış ayarları (`js/fiyat.js` → `SATIS_AYARLARI`):** `onlineSatisSiniri` (30000), `zarifSecimSiniri` (15000), `fiyatFiltreleri` ([5000, 10000, 15000, 30000]), `katalogUrunleriniGizle` (false), `ucretsizKargoSiniri` / `kargoUcreti` (örnek), `tasarimKaporaOrani` (örnek). Fonksiyonlar: `urunNormalFiyati`, `urunFiyati` (kampanya dahil), `kampanyadaMi` (markalılar hariç), `ayarSatilabilirMi`, `katalogMu`, `gorunurUrunler`.
+- **Ürün alanları (ek):** `kod` (LDY-1001…), `kime`, `gun` (Hediye Rehberi), `kampanya: { oran, bitis }`. Seçenek listeleri `KIME`, `GUNLER` (`js/urunler.js`). Örnek veride 3 katalog ürünü var (LDY-1019…1021). "Kolye Ucu" kategorisi menüde yok, ürün türü filtresinde duruyor.
+- **Sayfa adresleri (ek):** `hediye.html` (`?kime=`, `?gun=`, `?butce=`; `js/hediye.js`), `urunler.html?kampanya=1` (İnternete Özel Kampanyalar), `urunler.html?sirala=artan|azalan|yeni` (boş = Önerilen).
+- **Hediye paketi:** `hediyeSecenekHTML` / `hediyeDurumu` (`js/ortak.js`); sepet kaleminde `hediye: { paket, not }`. Ödemede "Farklı bir adrese hediye olarak gönder" alıcı alanları (`js/odeme.js`).
+- **Katalog ürünü:** ürün sayfasında "Fiyat için bize ulaşın", "Mağazamızda inceleyebilirsiniz" ve `whatsappBilgiLinki` (mesaj ürün adı, ayar ve koduyla dolar).
+- **Üst menü:** `#ust` `display: contents` (menü sayfa boyunca sabit kalsın diye); kaydırınca `.ust.ince` ile incelir.
 - **Tarayıcı hafızası anahtarları:** `lidya-sepet`, `lidya-hesap`, `lidya-favoriler`, `lidya-tasarimlar`, `lidya-adresler`, `lidya-bekleyen-tasarim`.
 - **Görsel adları (`foto/` klasörüne konunca kendiliğinden görünür):** `koleksiyon-minimal.jpg`, `koleksiyon-hediyelik.jpg`, `koleksiyon-gunluk.jpg`, `instagram-1.jpg` … `instagram-6.jpg`; Hakkımızda: `dukkan-dis.jpg`, `dukkan-ic.jpg`, `vitrin.jpg` (yer tutucu `<figure>` elle `<img>` ile değiştirilir).
 - **Logo:** Üst menüde yazı logosunun altında HTML yazı olarak "— SINCE 1989 —" (`.logo-alt`, `lang="en"`, düz hizalı rakamlar).
