@@ -161,6 +161,7 @@ Basit, adım adım seçim; serbest çizim yok. Her seçimde önizleme ve **tahmi
 - **Altyapı:** **Supabase** (giriş/üyelik, veritabanı, dosya depolama, sunucu işleri) + statik site (GitHub Pages) + iyzico/PayTR. Sebep: aylık ücret olmasın. Ayrıntılar: "Teknik notlar".
 - Prototip: HTML/CSS/JS, dosyalar düzenli, veriler (ürünler, iletişim, fiyat) ayrı dosyalarda.
 - **GitHub kuralı:** Her istenen değişiklik bittikten sonra, özet vermeden önce değişiklikleri Türkçe ve açıklayıcı bir commit mesajıyla commit'le ve GitHub'a push et. Repo **herkese açık** (GitHub Pages için). Şifre, API anahtarı, .env gibi gizli bilgiler asla commit'lenmez; .gitignore'da olur. Push başarısız olursa kullanıcıya söyle.
+- **Commit'ten önce `sh surum.sh` çalıştır:** Sayfalardaki CSS/JS bağlantılarına yeni sürüm numarası ekler; yoksa ziyaretçinin tarayıcısı eski dosyaları önbellekten getirip yeni sayfayla karıştırabilir (ürünler görünmez, butonlar çalışmaz).
 - **Push'tan sonra siteyi aç:** Pages yayını bitene kadar bekle, sonra siteyi kullanıcının tarayıcısında aç (komutlar "Teknik notlar"da). Kullanıcı ayrıca istemedikçe her push'tan sonra yapılır.
 - Her değişiklikten sonra bu dosyayı da güncel tut.
 
@@ -218,6 +219,7 @@ Eski özetten korunan teknik bilgiler. Yukarıdaki kararlarla çelişirse yukar�
 - **Terminalden giriş:** GitHub CLI `~/.local/bin/gh` (v2.102.0, Homebrew yok). `gh auth login` + `gh auth setup-git` yapıldı.
 - **Site (GitHub Pages):** https://emirtanir.github.io/ilk-projem/ — `main` dalına her push'ta otomatik yayınlanır. Kökte `.nojekyll` var (dosyalar işlenmeden yayınlanır).
 - **Push sonrası:** `gh api repos/emirtanir/ilk-projem/pages/builds/latest` → `status: built` ve commit eşleşene kadar bekle, sonra `open "https://emirtanir.github.io/ilk-projem/?v=<kısa commit>"` (sondaki `?v=` eski sürümün önbellekten gelmesini önler).
+- **Önbellek kırıcı (`surum.sh`):** GitHub Pages dosyaları ~10 dakika önbellekte tutar. `sh surum.sh` bütün `*.html` dosyalarında `css/…` ve `js/…` bağlantılarını `?v=YYYYAAGG-SSDDss` ile günceller ("kopyası" adlı dosyaları atlar). Yeni sayfa eklenirse kendi CSS/JS bağlantıları da otomatik kapsanır.
 - `.gitignore`: `.DS_Store`, `.env`, `.env.*`, `*.pem`, `*.key`, `secrets/`, `gizli/`, `.vscode/`, `.idea/`, `node_modules/`.
 
 ### Supabase
