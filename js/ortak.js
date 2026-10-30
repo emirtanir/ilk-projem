@@ -222,7 +222,7 @@ function ustKisimHTML() {
   <header class="ust">
     <div class="ust-ic">
       <button class="menu-dugme" aria-label="Menüyü aç" aria-expanded="false"><span></span><span></span><span></span></button>
-      <a class="logo" href="index.html"><img src="logo/lidya-yazi-koyu.svg" alt="Lidya Kuyumculuk"><span class="logo-alt">— since 1989 —</span></a>
+      <a class="logo" href="index.html"><img src="logo/lidya-yazi-koyu.svg" alt="Lidya Kuyumculuk"><span class="logo-alt" lang="en">— since 1989 —</span></a>
       <nav class="menu">
         ${linkler.map(([h, a]) => {
           if (a === 'İnternete Özel Kampanyalar') return `<a href="${h}" class="menu-uygun">${IKON_ETIKET}${a}</a>`;
