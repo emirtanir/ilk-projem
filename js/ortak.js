@@ -515,14 +515,14 @@ function iletisimBolumuHTML() {
   <div class="iletisim-duzen">
     <div class="iletisim-bilgi">
       <div class="iletisim-satir">${IKON_TEL}<div><span>Telefon</span><a href="${ILETISIM.telefonLink}">${ILETISIM.telefonYazi}</a></div></div>
-      <div class="iletisim-satir">${IKON_WA}<div><span>WhatsApp</span><a href="${ILETISIM.whatsappLink}" target="_blank" rel="noopener">${ILETISIM.telefonYazi}</a></div></div>
-      <div class="iletisim-satir">${IKON_INSTAGRAM}<div><span>Instagram</span><a href="${ILETISIM.instagram}" target="_blank" rel="noopener">@${ILETISIM.instagramKullanici}</a><small class="insta-not">${ILETISIM.instagramTakipci} takipçi · çekilişler Instagram’da</small></div></div>
+      <div class="iletisim-satir satir-wa">${IKON_WA}<div><span>WhatsApp</span><a href="${ILETISIM.whatsappLink}" target="_blank" rel="noopener">${ILETISIM.telefonYazi}</a></div></div>
+      <div class="iletisim-satir satir-ig">${IKON_INSTAGRAM}<div><span>Instagram</span><a href="${ILETISIM.instagram}" target="_blank" rel="noopener">@${ILETISIM.instagramKullanici}</a><small class="insta-not">${ILETISIM.instagramTakipci} takipçi · çekilişler Instagram’da</small></div></div>
       <div class="iletisim-satir">${IKON_SAAT_K}<div><span>Çalışma saatleri</span>
         ${ILETISIM.saatler.map(([gun, saat]) => `<p class="saat-satir"><span>${gun}</span><strong>${saat}</strong></p>`).join('')}</div></div>
       <div class="iletisim-satir">${IKON_KONUM}<div><span>Adres</span><p>${ILETISIM.adres}</p></div></div>
       <div class="iletisim-dugmeler">
         <a class="dugme" href="${ILETISIM.telefonLink}">Bizi Arayın</a>
-        <a class="dugme dugme-cizgi" href="${ILETISIM.whatsappLink}" target="_blank" rel="noopener">WhatsApp’tan Yaz</a>
+        <a class="dugme dugme-whatsapp" href="${ILETISIM.whatsappLink}" target="_blank" rel="noopener">${IKON_WA} WhatsApp’tan Yaz</a>
       </div>
     </div>
     <div class="harita-alani">

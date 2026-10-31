@@ -1138,3 +1138,42 @@ mark.eksik { background: #FFE97A; color: var(--yazi); border-radius: 3px; paddin
 .cerez-tur strong { display: block; color: var(--yazi); font-weight: 600; }
 .cerez-tur em { font-style: normal; font-weight: 400; color: var(--yazi-soluk); }
 @media (max-width: 380px) { .cerez-dugmeler .dugme { font-size: .8rem; } }
+
+/* =========================================================
+   MARKA RENKLERİ: WhatsApp yeşili, Instagram renk geçişi
+   (sitenin genel renk kuralına bilinçli istisna: tanınır olsunlar diye)
+   ========================================================= */
+:root {
+  --whatsapp: #25D366;
+  --whatsapp-koyu: #1DA851;
+  --instagram: linear-gradient(45deg, #F58529 0%, #DD2A7B 40%, #8134AF 72%, #515BD4 100%);
+  --instagram-pembe: #DD2A7B;
+}
+
+/* WhatsApp */
+.wa-yuzen { background: var(--whatsapp); border-color: transparent; box-shadow: 0 6px 18px rgba(37, 211, 102, .35); }
+.wa-yuzen svg { stroke: #fff; stroke-width: 1.6; }
+@media (hover: hover) { .wa-yuzen:hover { background: var(--whatsapp-koyu); box-shadow: 0 10px 24px rgba(37, 211, 102, .4); } }
+.dugme-whatsapp, .dugme-wa-bilgi { background: var(--whatsapp); border-color: var(--whatsapp); color: #fff; font-weight: 600; }
+.dugme-whatsapp:hover, .dugme-wa-bilgi:hover { background: var(--whatsapp-koyu); border-color: var(--whatsapp-koyu); color: #fff; }
+.dugme-whatsapp svg, .dugme-wa-bilgi svg { stroke: #fff; }
+.satir-wa > svg, .wa-onay svg { stroke: var(--whatsapp-koyu); }
+
+/* Instagram */
+.dugme-instagram { background: var(--instagram); background-size: 160% 160%; background-position: 0% 50%; border: 0; color: #fff; font-weight: 600; transition: background-position .5s var(--yumusak), transform .35s var(--yumusak); }
+.dugme-instagram:hover { background: var(--instagram); background-size: 160% 160%; background-position: 100% 50%; color: #fff; }
+.dugme-instagram svg { stroke: #fff; }
+/* Takipçi ve çekiliş etiketleri: renk geçişli çerçeve; çekiliş dolu */
+.insta-vurgu { border: 1.5px solid transparent; background: linear-gradient(#fff, #fff) padding-box, var(--instagram) border-box; }
+.insta-vurgu svg { stroke: var(--instagram-pembe); }
+.insta-vurgu:hover { border-color: transparent; }
+.insta-vurgu.cekilis { background: var(--instagram) border-box; border-color: transparent; color: #fff; }
+.insta-vurgu.cekilis svg { stroke: #fff; }
+.insta-vurgu.cekilis:hover { border-color: transparent; filter: saturate(1.15); }
+/* Izgara: üzerine gelince renk geçişli örtü */
+.satir-ig > svg, .alt-instagram svg { stroke: var(--instagram-pembe); }
+.instagram-kare:hover .instagram-ortu, .instagram-kare:focus-visible .instagram-ortu { background: transparent; }
+.instagram-ortu::before { content: ''; position: absolute; inset: 0; background: var(--instagram); opacity: 0; transition: opacity .4s var(--yumusak); }
+.instagram-kare:hover .instagram-ortu::before, .instagram-kare:focus-visible .instagram-ortu::before { opacity: .6; }
+.instagram-ortu svg { position: relative; }
+.insta-not { color: var(--instagram-pembe); }

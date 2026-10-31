@@ -103,6 +103,7 @@ Tek bir dosyada (`js/iletisim.js`) tutulur.
   - Sıcak açık zemin (soğuk beyaz da parlak krem de değil)
   - Koyu kahve-antrasit `#3A2E2A`: yazılar (saf siyah yok)
   - Altın rengi neredeyse hiç kullanılmaz; site pahalı/lüks görünmemeli, ulaşılabilir ama kaliteli görünmeli
+  - **Marka renkleri istisnası:** WhatsApp öğeleri WhatsApp yeşili (`#25D366`; sabit buton, "WhatsApp’tan Yaz", "WhatsApp’tan Bilgi Al"), Instagram öğeleri Instagram renk geçişi (turuncu → pembe → mor → mavi; Instagram butonu, takipçi/çekiliş etiketleri, fotoğraf üzerine gelme örtüsü). Değişkenler `css/stil.css` → `--whatsapp`, `--instagram`.
   - **İkinci renk henüz seçilmedi.** Öneriler: adaçayı `#8A9A82` (önerilen), kiremit `#C2775C`, mürdüm `#6E3B4E`
 - **Fontlar:** başlıklarda zarif serif, metinlerde sade sans-serif. İsim kolyesi önizlemesinde el yazısı fontlar.
 - **Animasyonlar:** kısa ve sakin (0.3–0.6 sn): kaydırınca hafif belirme, kartlarda hafif yükselme, butonlarda yumuşak geçiş. "Hareketi azalt" ayarı açıksa kapanır.
