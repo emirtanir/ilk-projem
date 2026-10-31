@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Ön Bilgilendirme Formu · Lidya Kuyumculuk</title>
+  <link rel="icon" href="logo/lidya-logo-yuvarlak.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/stil.css?v=20261031-030510">
+</head>
+<body>
+  <div id="ust"></div>
+
+  <!-- BU SAYFA OTOMATİK OLUŞTURULUR: yasal/01-on-bilgilendirme-formu.md dosyasını düzenleyip "perl yasal/sayfalari-olustur.pl" çalıştırın. -->
+  <main class="kap metin-sayfa yasal-sayfa">
+    <a class="geri-don" href="index.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>Geri dön</a>
+    <div class="sayfa-basi">
+      <span class="kucuk-baslik">Bilgilendirme</span>
+      <h1>Ön Bilgilendirme Formu</h1>
+    </div>
+    <p class="taslak-uyari"><strong>Taslak metin.</strong> Yayından önce avukat kontrolünden geçecek. <mark class="eksik">Sarı</mark> alanlar henüz doldurulmamış bilgilerdir; <span class="otomatik">gri</span> alanlar sipariş anında otomatik doldurulur.</p>
+    <article class="yasal-metin">
+<p class="yasal-giris">Bu form, 6502 sayılı Tüketicinin Korunması Hakkında Kanun ve Mesafeli Sözleşmeler Yönetmeliği uyarınca, siparişinizi onaylamadan önce bilgilendirilmeniz amacıyla hazırlanmıştır. Siparişi onaylamanız, bu formu okuduğunuz ve bilgi sahibi olduğunuz anlamına gelir.</p>
+<h2>1. Satıcı bilgileri</h2>
+<div class="tablo-kap"><table>
+<tbody>
+<tr><td>Unvan</td><td><mark class="eksik">[TİCARİ UNVAN]</mark></td></tr>
+<tr><td>Marka</td><td>Lidya Kuyum</td></tr>
+<tr><td>MERSİS No</td><td><mark class="eksik">[MERSİS NO]</mark></td></tr>
+<tr><td>Vergi Dairesi / No</td><td><mark class="eksik">[VERGİ DAİRESİ]</mark> / <mark class="eksik">[VERGİ NO]</mark></td></tr>
+<tr><td>Adres</td><td><mark class="eksik">[AÇIK ADRES]</mark>, Manavgat / Antalya</td></tr>
+<tr><td>Telefon</td><td>0532 365 00 40</td></tr>
+<tr><td>E-posta</td><td>info@lidyakuyum.com</td></tr>
+<tr><td>KEP Adresi</td><td><mark class="eksik">[KEP ADRESİ, varsa]</mark></td></tr>
+</tbody></table></div>
+<h2>2. Sipariş edilen ürün(ler)</h2>
+<p><span class="otomatik" data-alan="ÜRÜN_TABLOSU">{{ÜRÜN_TABLOSU}}</span> <em>(Ürün adı, ürün kodu, ayar, yaklaşık gram, adet, birim fiyat, KDV dahil toplam fiyat)</em></p>
+<ul>
+  <li>Ara toplam: <span class="otomatik" data-alan="ARA_TOPLAM">{{ARA_TOPLAM}}</span></li>
+  <li>Kargo ücreti: <span class="otomatik" data-alan="KARGO_UCRETI">{{KARGO_UCRETI}}</span></li>
+  <li>Hediye paketi: Ücretsiz</li>
+  <li><strong>Vergiler dahil toplam tutar: <span class="otomatik" data-alan="TOPLAM_TUTAR">{{TOPLAM_TUTAR}}</span></strong></li>
+</ul>
+<p>Altın ürünlerin fiyatı, siparişin verildiği andaki fiyattır. Siparişiniz onaylandıktan sonra altın fiyatlarında oluşan değişiklikler, ödediğiniz tutarı etkilemez.</p>
+<h2>3. Ödeme</h2>
+<p>Ödeme, <span class="otomatik" data-alan="ODEME_YONTEMI">{{ODEME_YONTEMI}}</span> ile yapılır. Kart bilgileriniz Lidya Kuyum'a iletilmez; ödeme işlemi lisanslı ödeme kuruluşu <mark class="eksik">[ÖDEME KURULUŞU ADI]</mark> altyapısı üzerinden gerçekleştirilir. Taksitli ödemelerde vade farkı ve taksit koşulları ödeme sayfasında gösterilir.</p>
+<p><strong>Siparişi onaylamanızla birlikte ödeme yükümlülüğü altına girersiniz.</strong></p>
+<h2>4. Teslimat</h2>
+<ul>
+  <li>Teslimat adresi: <span class="otomatik" data-alan="TESLIMAT_ADRESI">{{TESLIMAT_ADRESI}}</span></li>
+  <li>Alıcı: <span class="otomatik" data-alan="ALICI_ADI">{{ALICI_ADI}}</span></li>
+  <li>Hazır ürünler, siparişin onaylanmasından itibaren en geç <mark class="eksik">[X]</mark> iş günü içinde; kişiye özel ürünler en geç 3 iş günü içinde kargoya verilir (pazar günleri ve resmî tatiller hariç).</li>
+  <li>Her hâlükârda teslimat, yasal süre olan 30 günü aşmaz.</li>
+  <li>Ürünler sigortalı olarak <mark class="eksik">[KARGO FİRMASI]</mark> ile gönderilir.</li>
+  <li>Hediye paketli siparişlerde pakete fiyat bilgisi içeren belge konmaz; faturanız size e-posta ile gönderilir.</li>
+</ul>
+<h2>5. Cayma hakkı</h2>
+<ul>
+  <li>Hiçbir hukuki ve cezai sorumluluk üstlenmeksizin ve hiçbir gerekçe göstermeksizin, ürünü teslim aldığınız günden itibaren <strong>14 gün</strong> içinde cayma hakkınızı kullanabilirsiniz. Ürün teslim edilmeden önce de cayma hakkınızı kullanabilirsiniz.</li>
+  <li>Cayma bildiriminizi süre dolmadan, info@lidyakuyum.com adresine e-posta ile, <mark class="eksik">[AÇIK ADRES]</mark> adresine yazılı olarak veya hesabınızdaki "Siparişlerim" bölümünden iletebilirsiniz.</li>
+  <li>Cayma bildiriminizden itibaren 10 gün içinde ürünü, faturası ve kutusuyla birlikte geri göndermeniz gerekir.</li>
+  <li><strong>İade için anlaşmalı kargo firmamız <mark class="eksik">[KARGO FİRMASI]</mark>'dır.</strong> Bu firma ile yapılan iade gönderilerinde sizden ücret alınmaz. Size verilecek iade koduyla ürünü sigortalı olarak gönderebilirsiniz. Bulunduğunuz yerde anlaşmalı kargo firmasının şubesi yoksa ürün, ek bir masraf talep edilmeksizin sizden teslim alınır.</li>
+  <li>Cayma bildiriminizin bize ulaştığı tarihten itibaren <strong>14 gün</strong> içinde, teslimat masrafları dahil ödediğiniz toplam tutar, ödemede kullandığınız yöntemle iade edilir.</li>
+  <li>Ürünün niteliğini ve özelliklerini belirlemek için gereken ölçünün ötesinde kullanılması, hasar görmesi veya eksik parça/eksik gram ile iade edilmesi hâlinde oluşan değer kaybından tüketici sorumludur.</li>
+</ul>
+<h3>Cayma hakkının kullanılamayacağı durumlar</h3>
+<p>Mesafeli Sözleşmeler Yönetmeliği'nin 15. maddesi uyarınca, <strong>tüketicinin istekleri veya kişisel ihtiyaçları doğrultusunda hazırlanan ürünlerde cayma hakkı bulunmamaktadır.</strong> Sitemizdeki "Kendi Tasarımını Yap" bölümünden sipariş edilen isim kolyesi, lazerle resim ve sipariş üzerine hazırlanan diğer kişiye özel ürünler bu kapsamdadır. Bu ürünler için sipariş öncesinde ayrıca onayınız alınır.</p>
+<p><mark class="eksik">[AVUKATA SORULACAK: Hijyen ambalajlı ürünler (ör. küpe) için ayrı bir istisna uygulanıp uygulanmayacağı.]</mark></p>
+<h2>6. Ayıplı ürün</h2>
+<p>Cayma hakkından bağımsız olarak, ayıplı ürünlerde 6502 sayılı Kanun'dan doğan seçimlik haklarınız (bedel iadesi, indirim, ücretsiz onarım veya ayıpsız misliyle değişim) saklıdır. Kişiye özel ürünler de bu kapsamdadır.</p>
+<h2>7. Şikâyet ve başvuru</h2>
+<p>Talep ve şikâyetlerinizi yukarıdaki iletişim bilgilerinden bize iletebilirsiniz. Ayrıca, her yıl Ticaret Bakanlığı tarafından belirlenen parasal sınırlar dahilinde yerleşim yerinizdeki veya işlemi yaptığınız yerdeki <strong>Tüketici Hakem Heyeti</strong>'ne, bu sınırları aşan uyuşmazlıklarda ise kanunda öngörülen zorunlu arabuluculuk yoluna başvurduktan sonra <strong>Tüketici Mahkemesi</strong>'ne başvurabilirsiniz.</p>
+<h2>8. Sözleşmenin saklanması</h2>
+<p>Mesafeli satış sözleşmesi ve bu form, siparişinizin ardından e-posta adresinize gönderilir ve hesabınızın "Siparişlerim" bölümünde saklanır.</p>
+    </article>
+  </main>
+
+  <div id="alt"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js"></script>
+  <script src="js/supabase.js?v=20261031-030510"></script>
+  <script src="js/fiyat.js?v=20261031-030510"></script>
+  <script src="js/iletisim.js?v=20261031-030510"></script>
+  <script src="js/ortak.js?v=20261031-030510"></script>
+</body>
+</html>

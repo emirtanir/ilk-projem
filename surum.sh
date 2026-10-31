@@ -6,6 +6,6 @@ cd "$(dirname "$0")" || exit 1
 SURUM=$(date +%Y%m%d-%H%M%S)
 for f in *.html; do
   case "$f" in *kopyası*) continue ;; esac
-  sed -i '' -E "s#((src|href)=\"(css|js)/[a-z]+\.(css|js))(\?v=[0-9-]+)?\"#\1?v=$SURUM\"#g" "$f"
+  sed -i '' -E "s#((src|href)=\"(css|js)/[a-z-]+\.(css|js))(\?v=[0-9-]+)?\"#\1?v=$SURUM\"#g" "$f"
 done
 echo "Sürüm: $SURUM"

@@ -156,6 +156,13 @@ Basit, adım adım seçim; serbest çizim yok. Her seçimde önizleme ve **tahmi
   - Gönderim öncesi ve iade gelişinde hassas tartı, damga fotoğrafı ve video kaydı. Hasar/eksik gram halinde değer kaybı düşülür.
 - **Ödeme:** iyzico veya PayTR (karar verilmedi). Kart bilgisi siteye gelmez.
 
+### Yasal metinler
+- **Yasal metinler TASLAKTIR; yayından önce avukat kontrolü gerekiyor.** Kaynak dosyalar `yasal/` klasöründe (`00-OKU-BENI.md`: doldurulacak bilgiler, avukata sorulacaklar, bilerek yazılmayanlar).
+- Sayfalar: Ön bilgilendirme formu, Mesafeli satış sözleşmesi, İade ve cayma, KVKK aydınlatma metni, Çerez politikası, Kargo bilgileri (alt kısımdaki "Bilgilendirme" bağlantıları). Her sayfanın üstünde "Taslak metin" notu var; [KÖŞELİ PARANTEZ] yer tutucular sarı vurgulu.
+- **Ödeme sayfası:** Siparişten önce ön bilgilendirme formu ve mesafeli satış sözleşmesi açılır kutularda, siparişin bilgileriyle doldurulmuş olarak gösterilir. "Ön bilgilendirme formunu ve mesafeli satış sözleşmesini okudum, onaylıyorum" kutusu işaretlenmeden sipariş verilemez. Sipariş butonu: **"Siparişi Onayla ve Öde"**.
+- **Çerezler:** İlk girişte çerez penceresi; "Kabul et", "Reddet" ve "Tercihler" eşit görünürlükte. Alt kısımda "Çerez Tercihleri" bağlantısı. Zorunlu olmayan çerezler onaydan önce çalışmaz (işlevsel izin yoksa favoriler sadece oturum boyunca tutulur; analitik/pazarlama araçları eklenince yalnızca izin varsa yüklenmeli).
+- Yayından önce yapılacak: mesafeli satış sözleşmesinin siparişten sonra e-postayla gönderilmesi ve hesapta (Siparişlerim) saklanması.
+
 ## 13. Teknik ve çalışma kuralları
 
 - **Altyapı:** **Supabase** (giriş/üyelik, veritabanı, dosya depolama, sunucu işleri) + statik site (GitHub Pages) + iyzico/PayTR. Sebep: aylık ücret olmasın. Ayrıntılar: "Teknik notlar".
@@ -192,8 +199,9 @@ Basit, adım adım seçim; serbest çizim yok. Her seçimde önizleme ve **tahmi
 - [ ] e-Arşiv fatura entegrasyonu
 - [ ] DHL eCommerce sigortalı gönderi anlaşması + entegrasyon
 - [ ] Sipariş/kargo e-postaları, info@lidyakuyum.com
-- [ ] Yasal metinler: mesafeli satış sözleşmesi, ön bilgilendirme formu, iade ve cayma, KVKK aydınlatma, açık rıza, çerez politikası, kargo bilgileri (avukata okutulacak)
-- [ ] Çerez onay penceresi
+- [ ] Yasal metinler: mesafeli satış sözleşmesi, ön bilgilendirme formu, iade ve cayma, KVKK aydınlatma, açık rıza, çerez politikası, kargo bilgileri — **taslaklar sitede (`yasal/`), avukat kontrolü ve sarı yer tutucuların doldurulması gerekiyor**
+- [x] Çerez onay penceresi (prototipte var; gerçek analitik/pazarlama araçları izin kontrolüyle bağlanacak)
+- [ ] Mesafeli satış sözleşmesinin siparişten sonra e-postayla gönderilmesi ve hesapta saklanması
 - [ ] ETBİS kaydı, İYS kaydı, VERBİS durumu
 - [ ] Yedekleme, güvenlik eklentisi, yönetici paneline iki adımlı doğrulama, reCAPTCHA
 - [ ] Gerçek ürün fotoğrafları
@@ -248,8 +256,10 @@ Eski özetten korunan teknik bilgiler. Yukarıdaki kararlarla çelişirse yukar�
 - **Hediye paketi:** `hediyeSecenekHTML` / `hediyeDurumu` (`js/ortak.js`); sepet kaleminde `hediye: { paket, not }`. Ödemede "Farklı bir adrese hediye olarak gönder" alıcı alanları (`js/odeme.js`).
 - **Katalog ürünü:** ürün sayfasında "Fiyat için bize ulaşın", "Mağazamızda inceleyebilirsiniz" ve `whatsappBilgiLinki` (mesaj ürün adı, ayar ve koduyla dolar).
 - **Sıralama ve popülerlik (`js/ortak.js`):** `SIRALAMALAR`, `urunleriSirala(liste, sira)`, `siralaAraciHTML` / `siralaAraciBagla` (Sırala butonu + paneli), `panelAcKapat` (telefonda alttan açılan, bilgisayarda açılır kutu panel). `goruntulenmeArtir(urunId)` ürün sayfası açılınca çağrılır; prototipte sadece tarayıcıda (`lidya-goruntulenme`) artırır, gerçek sitede içi sunucuya (Supabase) istek atacak şekilde değiştirilecek. `goruntulenmeSayisi(urun)` = ürün verisindeki `goruntulenme` + tarayıcıdaki artış. Ürün verisinde `goruntulenme` (başlangıç sayısı) ve `eklenmeTarihi` ('YYYY-AA-GG') alanları var. Adres parametresi: `?sirala=populer|artan|azalan|yeni` (boş = Önerilen).
+- **Yasal sayfalar:** `yasal/*.md` → `perl yasal/sayfalari-olustur.pl` → kökte `on-bilgilendirme-formu.html`, `mesafeli-satis-sozlesmesi.html`, `iade-ve-cayma.html`, `kvkk.html`, `cerez-politikasi.html`, `kargo-bilgileri.html` ve ödeme sayfası için `js/yasal-metinler.js` (`YASAL_METINLER`). Bu dosyalar elle düzenlenmez; metin değişince `.md` düzenlenir, betik ve ardından `sh surum.sh` çalıştırılır. `[…]` → `<mark class="eksik">`, `{{ALAN}}` → `<span class="otomatik" data-alan>`; ödemede `sozlesmeleriDoldur()` (`js/odeme.js`) alanları doldurur.
+- **Çerez tercihi (`js/ortak.js`):** `lidya-cerez` (zorunlu kayıt) = { zorunlu, islevsel, analitik, pazarlama, tarih }. `cerezIzni(tur)`, `cerezTercihiKaydet`, `cerezPenceresiAc`. `ISLEVSEL_KAYITLAR` (`lidya-favoriler`, `lidya-goruntulenme`) izin yoksa `sessionStorage`'da tutulur.
 - **Üst menü:** `#ust` `display: contents` (menü sayfa boyunca sabit kalsın diye); kaydırınca `.ust.ince` ile incelir.
-- **Tarayıcı hafızası anahtarları:** `lidya-sepet`, `lidya-hesap`, `lidya-favoriler`, `lidya-tasarimlar`, `lidya-adresler`, `lidya-bekleyen-tasarim`, `lidya-goruntulenme`.
+- **Tarayıcı hafızası anahtarları:** `lidya-sepet`, `lidya-hesap`, `lidya-favoriler`, `lidya-tasarimlar`, `lidya-adresler`, `lidya-bekleyen-tasarim`, `lidya-goruntulenme`, `lidya-cerez`.
 - **Görsel adları (`foto/` klasörüne konunca kendiliğinden görünür):** `koleksiyon-minimal.jpg`, `koleksiyon-hediyelik.jpg`, `koleksiyon-gunluk.jpg`, `instagram-1.jpg` … `instagram-6.jpg`; Hakkımızda: `dukkan-dis.jpg`, `dukkan-ic.jpg`, `vitrin.jpg` (yer tutucu `<figure>` elle `<img>` ile değiştirilir).
 - **Logo:** Üst menüde yazı logosunun altında HTML yazı olarak "— SINCE 1989 —" (`.logo-alt`, `lang="en"`, düz hizalı rakamlar).
 - **Prototipin çalışma şekli:** `index.html` çift tıkla açılabilir; sunucu gerekmez. Animasyonlar `prefers-reduced-motion` açıksa kapanır.

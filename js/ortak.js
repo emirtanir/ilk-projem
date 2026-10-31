@@ -217,19 +217,121 @@ function sepetSayaciGuncelle() {
    hafızasında; sonraki adımda Supabase veritabanına taşınacak.
    ========================================================= */
 const hafizaYedek = {};
+// İşlevsel çerez/kayıt sayılanlar (Çerez Politikası): sadece kullanıcı izin verirse kalıcı saklanır.
+// İzin yoksa yalnızca bu oturum boyunca (sekme kapanınca silinir) tutulur.
+const ISLEVSEL_KAYITLAR = ['lidya-favoriler', 'lidya-goruntulenme'];
+function kayitYeri(anahtar) {
+  return ISLEVSEL_KAYITLAR.includes(anahtar) && !cerezIzni('islevsel') ? sessionStorage : localStorage;
+}
 function hafizaGetir(anahtar, varsayilan) {
   try {
-    const deger = localStorage.getItem(anahtar);
+    const deger = kayitYeri(anahtar).getItem(anahtar);
     return deger === null ? varsayilan : JSON.parse(deger);
   } catch (e) { return anahtar in hafizaYedek ? hafizaYedek[anahtar] : varsayilan; }
 }
 function hafizaKaydet(anahtar, deger) {
   hafizaYedek[anahtar] = deger;
   try {
-    if (deger === null) localStorage.removeItem(anahtar);
-    else localStorage.setItem(anahtar, JSON.stringify(deger));
+    const yer = kayitYeri(anahtar);
+    if (deger === null) yer.removeItem(anahtar);
+    else yer.setItem(anahtar, JSON.stringify(deger));
   } catch (e) { /* hafıza kapalı ya da dolu */ }
 }
+
+/* =========================================================
+   ÇEREZ TERCİHLERİ — ilk girişte pencere; "Kabul et", "Reddet", "Tercihler" eşit görünürlükte.
+   Zorunlu olmayan çerezler (işlevsel, analitik, pazarlama) onaydan önce çalışmaz.
+   Analitik/pazarlama araçları eklenince yalnızca cerezIzni('analitik') / cerezIzni('pazarlama') true ise yüklenmeli.
+   ========================================================= */
+const CEREZ_ANAHTARI = 'lidya-cerez';   // zorunlu kayıt: tercihin kendisi
+const CEREZ_TURLERI = {
+  zorunlu: ['Zorunlu', 'Sepet, oturum, güvenlik ve çerez tercihiniz. Site bunlar olmadan çalışmaz.'],
+  islevsel: ['İşlevsel', 'Favorileriniz ve benzeri seçimlerinizin bir sonraki ziyarette hatırlanması.'],
+  analitik: ['Analitik', 'Sitenin nasıl kullanıldığını anlayıp geliştirmemize yardımcı olur.'],
+  pazarlama: ['Pazarlama', 'İlgi alanlarınıza uygun reklamlar gösterilmesi.'],
+};
+function cerezTercihi() {
+  try { return JSON.parse(localStorage.getItem(CEREZ_ANAHTARI)); } catch (e) { return null; }
+}
+function cerezIzni(tur) {
+  if (tur === 'zorunlu') return true;
+  const t = cerezTercihi();
+  return !!(t && t[tur]);
+}
+function cerezTercihiKaydet(izinler) {
+  const onceki = cerezIzni('islevsel');
+  const kayit = { zorunlu: true, islevsel: !!izinler.islevsel, analitik: !!izinler.analitik, pazarlama: !!izinler.pazarlama, tarih: new Date().toISOString() };
+  try { localStorage.setItem(CEREZ_ANAHTARI, JSON.stringify(kayit)); } catch (e) { /* hafıza kapalı */ }
+  // İşlevsel izin değiştiyse kayıtları doğru yere taşı (izin geri alınırsa kalıcı kayıt silinir)
+  if (onceki !== kayit.islevsel) {
+    ISLEVSEL_KAYITLAR.forEach(k => {
+      try {
+        const [eski, yeni] = kayit.islevsel ? [sessionStorage, localStorage] : [localStorage, sessionStorage];
+        const deger = eski.getItem(k);
+        if (deger !== null) yeni.setItem(k, deger);
+        eski.removeItem(k);
+      } catch (e) { /* hafıza kapalı */ }
+    });
+  }
+}
+
+function cerezPenceresiHTML() {
+  const t = cerezTercihi() || {};
+  return `<div class="cerez-pencere" id="cerez-pencere" role="dialog" aria-labelledby="cerez-baslik" aria-live="polite">
+    <div class="cerez-ic">
+      <div class="cerez-ozet" id="cerez-ozet">
+        <h2 id="cerez-baslik">Çerezler</h2>
+        <p>Sitenin çalışması için zorunlu çerezleri kullanıyoruz. İzin verirseniz deneyiminizi iyileştirmek için başka çerezler de kullanırız. Ayrıntılar <a href="cerez-politikasi.html">Çerez Politikası</a>’nda.</p>
+      </div>
+      <form class="cerez-tercihler" id="cerez-tercihler" hidden>
+        <h2>Çerez tercihleri</h2>
+        ${Object.entries(CEREZ_TURLERI).map(([k, [ad, aciklama]]) => `
+          <label class="cerez-tur">
+            <input type="checkbox" name="${k}" ${k === 'zorunlu' || t[k] ? 'checked' : ''} ${k === 'zorunlu' ? 'disabled' : ''}>
+            <span><strong>${ad}${k === 'zorunlu' ? ' <em>(her zaman açık)</em>' : ''}</strong>${aciklama}</span>
+          </label>`).join('')}
+      </form>
+      <div class="cerez-dugmeler" id="cerez-dugmeler">
+        <button type="button" class="dugme dugme-cizgi" data-cerez="kabul">Kabul et</button>
+        <button type="button" class="dugme dugme-cizgi" data-cerez="reddet">Reddet</button>
+        <button type="button" class="dugme dugme-cizgi" data-cerez="tercihler">Tercihler</button>
+      </div>
+      <div class="cerez-dugmeler" id="cerez-kaydet-dugmeler" hidden>
+        <button type="button" class="dugme dugme-cizgi" data-cerez="reddet">Tümünü reddet</button>
+        <button type="button" class="dugme dugme-cizgi" data-cerez="kaydet">Tercihleri kaydet</button>
+        <button type="button" class="dugme dugme-cizgi" data-cerez="kabul">Tümünü kabul et</button>
+      </div>
+    </div>
+  </div>`;
+}
+function cerezPenceresiAc(tercihlerle) {
+  document.getElementById('cerez-pencere')?.remove();
+  document.body.insertAdjacentHTML('beforeend', cerezPenceresiHTML());
+  if (tercihlerle) cerezTercihleriniGoster();
+}
+function cerezTercihleriniGoster() {
+  document.getElementById('cerez-tercihler').hidden = false;
+  document.getElementById('cerez-ozet').hidden = true;
+  document.getElementById('cerez-dugmeler').hidden = true;
+  document.getElementById('cerez-kaydet-dugmeler').hidden = false;
+}
+document.addEventListener('click', e => {
+  if (e.target.closest('[data-cerez-tercihleri]')) { cerezPenceresiAc(true); return; }
+  const dugme = e.target.closest('[data-cerez]');
+  if (!dugme) return;
+  const islem = dugme.dataset.cerez;
+  if (islem === 'tercihler') { cerezTercihleriniGoster(); return; }
+  if (islem === 'kabul') cerezTercihiKaydet({ islevsel: true, analitik: true, pazarlama: true });
+  if (islem === 'reddet') cerezTercihiKaydet({});
+  if (islem === 'kaydet') {
+    const f = document.getElementById('cerez-tercihler');
+    cerezTercihiKaydet({ islevsel: f.islevsel.checked, analitik: f.analitik.checked, pazarlama: f.pazarlama.checked });
+  }
+  document.getElementById('cerez-pencere').remove();
+  bildirim('Çerez tercihiniz kaydedildi. Dilediğiniz zaman alt kısımdaki “Çerez Tercihleri”nden değiştirebilirsiniz.');
+});
+// İlk girişte (tercih yoksa) pencere açılır
+document.addEventListener('DOMContentLoaded', () => { if (!cerezTercihi()) cerezPenceresiAc(false); });
 
 // Giriş durumu Supabase oturumundan gelir; sayfalar hızlı açılsın diye
 // kullanıcının özet bilgisi ('lidya-hesap') tarayıcıda da tutulur ve oturumla eşitlenir.
@@ -470,12 +572,13 @@ function altKisimHTML() {
       <div>
         <h4>Bilgilendirme</h4>
         <ul class="yasal">
-          <li>Mesafeli satış sözleşmesi</li>
-          <li>Ön bilgilendirme formu</li>
-          <li>İade ve cayma</li>
+          <li><a href="mesafeli-satis-sozlesmesi.html">Mesafeli satış sözleşmesi</a></li>
+          <li><a href="on-bilgilendirme-formu.html">Ön bilgilendirme formu</a></li>
+          <li><a href="iade-ve-cayma.html">İade ve cayma</a></li>
           <li><a href="kvkk.html">KVKK aydınlatma metni</a></li>
-          <li>Çerez politikası</li>
-          <li>Kargo bilgileri</li>
+          <li><a href="cerez-politikasi.html">Çerez politikası</a></li>
+          <li><a href="kargo-bilgileri.html">Kargo bilgileri</a></li>
+          <li><button type="button" class="alt-link-dugme" data-cerez-tercihleri>Çerez Tercihleri</button></li>
         </ul>
       </div>
     </div>

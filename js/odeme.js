@@ -64,9 +64,20 @@ function odemeCiz() {
       <section class="hesap-kart">
         <h3>Ödeme</h3>
         <div class="prototip-uyari">Kart bilgileri ödeme şirketinin güvenli sayfasında alınır. Bu prototipte ödeme adımı bulunmuyor.</div>
+        <!-- Siparişten önce ön bilgilendirme formu ve mesafeli satış sözleşmesi (siparişin bilgileriyle doldurulur) -->
+        <div class="sozlesmeler">
+          <details class="sozlesme-kutu">
+            <summary>Ön Bilgilendirme Formu</summary>
+            <div class="yasal-metin sozlesme-metin" data-sozlesme="onBilgilendirme"></div>
+          </details>
+          <details class="sozlesme-kutu">
+            <summary>Mesafeli Satış Sözleşmesi</summary>
+            <div class="yasal-metin sozlesme-metin" data-sozlesme="mesafeliSatis"></div>
+          </details>
+        </div>
         <label class="onay">
-          <input type="checkbox" required>
-          <span>Ön bilgilendirme formunu ve mesafeli satış sözleşmesini okudum, onaylıyorum. <em>(zorunlu)</em></span>
+          <input type="checkbox" name="sozlesmeOnay" required>
+          <span>Ön bilgilendirme formunu ve mesafeli satış sözleşmesini okudum, onaylıyorum</span>
         </label>
       </section>
     </div>
@@ -81,10 +92,55 @@ function odemeCiz() {
       <div class="ozet-satir"><span>Kargo</span><span>${kargo ? paraYaz(kargo) : '<strong class="ucretsiz">Ücretsiz</strong>'}</span></div>
       <div class="ozet-satir toplam"><span>${tasarimVar ? 'Şimdi ödenecek' : 'Toplam'}</span><span>${paraYaz(simdiOdenecek)}</span></div>
       ${tasarimVar ? `<div class="ozet-satir kalan"><span>Kalan (kesin fiyat tartımdan sonra)</span><span>≈ ${paraYaz(kalanTutar)}</span></div>` : ''}
-      <button class="dugme dugme-genis" type="submit">Siparişi Tamamla</button>
+      <button class="dugme dugme-genis" type="submit">Siparişi Onayla ve Öde</button>
       <a class="metin-link" href="sepet.html">← Sepete dön</a>
     </aside>
   </form>`;
+}
+
+/* ---------- Ön bilgilendirme formu ve mesafeli satış sözleşmesi ----------
+   Metinler js/yasal-metinler.js'ten gelir (yasal/*.md'den üretilir). {{ALAN}} etiketleri siparişin
+   bilgileriyle doldurulur; henüz girilmemiş bilgiler gri etiket olarak kalır. */
+function siparisAlanlari() {
+  const f = document.getElementById('odeme-form');
+  const deger = ad => (f[ad] && !f[ad].disabled ? f[ad].value.trim() : '');
+  const adresYaz = (adres, ilce, il) => [adres, [ilce, il].filter(Boolean).join(' / ')].filter(Boolean).join(', ');
+  // Teslimat adresi: kayıtlı adres seçiliyse o, değilse yazılan adres
+  const secili = f.querySelector('[name=kayitliAdres]:checked');
+  const kayitli = secili && secili.value !== 'yeni' ? adreslerGetir()[secili.value] : null;
+  const aliciAdresi = kayitli ? adresYaz(kayitli.adres, kayitli.ilce, kayitli.il) : adresYaz(deger('adres'), deger('ilce'), deger('il'));
+  const hediye = f.querySelector('#hediye-gonder').checked;
+  const teslimAdresi = hediye ? adresYaz(deger('aliciAdres'), deger('aliciIlce'), deger('aliciIl')) : aliciAdresi;
+  const teslimAlan = hediye ? deger('aliciAd') : deger('ad');
+  const { araToplam, kargo, tasarimVar, simdiOdenecek } = sepetToplamlari(sepet);
+  const hediyePaketi = sepet.some(s => s.hediye && s.hediye.paket);
+  const urunTablosu = `<table class="sozlesme-urunler"><thead><tr><th>Ürün</th><th>Kod</th><th>Ayrıntı</th><th>Adet</th><th>Tutar (KDV dahil)</th></tr></thead><tbody>
+    ${sepet.map(s => `<tr><td>${kacir(s.ad)}</td><td>${kacir(s.kod || '—')}</td><td>${kacir(s.detay)}${s.hediye && s.hediye.paket ? ' · Hediye paketi' : ''}</td><td>${s.adet}</td><td>${s.siparisUsulu ? '≈ ' : ''}${paraYaz(s.fiyat * s.adet)}</td></tr>`).join('')}
+  </tbody></table>`;
+  return {
+    'ÜRÜN_TABLOSU': urunTablosu,
+    ARA_TOPLAM: paraYaz(araToplam),
+    KARGO_UCRETI: kargo ? paraYaz(kargo) : 'Ücretsiz',
+    TOPLAM_TUTAR: paraYaz(araToplam + kargo) + (tasarimVar ? ` (kişiye özel ürünlerde tahmini; şimdi ödenecek: ${paraYaz(simdiOdenecek)})` : ''),
+    HEDIYE_PAKETI: hediyePaketi ? 'Var' : 'Yok',
+    ODEME_YONTEMI: 'kredi kartı / banka kartı',
+    SIPARIS_TARIHI: new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }),
+    ALICI_AD_SOYAD: deger('ad'), ALICI_ADI: teslimAlan, ALICI_EPOSTA: deger('eposta'), ALICI_TELEFON: deger('telefon'),
+    ALICI_ADRES: aliciAdresi, TESLIM_ALAN: teslimAlan, TESLIMAT_ADRESI: teslimAdresi,
+  };
+}
+function sozlesmeleriDoldur() {
+  if (typeof YASAL_METINLER === 'undefined') return;
+  const alanlar = siparisAlanlari();
+  document.querySelectorAll('[data-sozlesme]').forEach(kap => {
+    if (!kap.dataset.hazir) { kap.innerHTML = YASAL_METINLER[kap.dataset.sozlesme]; kap.dataset.hazir = '1'; }
+    kap.querySelectorAll('.otomatik[data-alan]').forEach(etiket => {
+      const d = alanlar[etiket.dataset.alan];
+      etiket.classList.toggle('dolu', !!d);
+      if (d) etiket.innerHTML = etiket.dataset.alan === 'ÜRÜN_TABLOSU' ? d : kacir(d);
+      else etiket.textContent = `{{${etiket.dataset.alan}}}`;
+    });
+  });
 }
 
 function tamamlandiCiz(bilgi) {
@@ -169,9 +225,16 @@ if (sepet.length) {
   // Kayıtlı adres seçiliyken gizli yeni adres alanları formu engellemesin
   alan.querySelectorAll('#yeni-adres input, #yeni-adres textarea').forEach(g => { g.disabled = true; });
 
+  // Sözleşme metinleri: formdaki bilgiler değiştikçe yeniden doldurulur
+  sozlesmeleriDoldur();
+  alan.addEventListener('input', sozlesmeleriDoldur);
+  alan.addEventListener('change', sozlesmeleriDoldur);
+
   alan.addEventListener('submit', e => {
     if (e.target.id !== 'odeme-form') return;
     e.preventDefault();
+    // Onay kutusu işaretlenmeden sipariş verilemez (tarayıcı da "required" ile engeller)
+    if (!e.target.sozlesmeOnay.checked) { e.target.sozlesmeOnay.reportValidity(); return; }
     const f = e.target;
     const bilgi = { ad: f.ad.value.trim(), eposta: f.eposta.value.trim(), telefon: f.telefon.value.trim(),
       hediyeAlici: f.querySelector('#hediye-gonder').checked ? f.aliciAd.value.trim() : '' };
